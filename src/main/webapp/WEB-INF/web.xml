@@ -14,7 +14,7 @@
         <init-param>
             <description>Vaadin application class to start</description>
             <param-name>application</param-name>
-            <param-value>com.jayway.esconomy.Main</param-value>
+            <param-value>com.jayway.esconomy.ui.Main</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>
