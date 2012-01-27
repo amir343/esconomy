@@ -5,7 +5,7 @@ Esconomy is your little economy application that helps you keep track of your ex
 
 * [sbt] as the build tool
 * [Vaadin] as the UI framework
-* [MongoDB]] as the database
+* [MongoDB] as the database
 
 [sbt]: https://github.com/harrah/xsbt
 [Vaadin]: http://vaadin.com/
