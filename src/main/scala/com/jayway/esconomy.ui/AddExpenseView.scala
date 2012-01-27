@@ -1,9 +1,11 @@
 package com.jayway.esconomy.ui
 
-import java.util.Date
 import com.vaadin.ui._
 import com.vaadin.data.util.IndexedContainer
-
+import com.jayway.esconomy.domain.Item
+import java.util.Date
+import com.jayway.esconomy.dao.{Queries, Commands}
+import scala.collection.JavaConversions._
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -23,11 +25,21 @@ import com.vaadin.data.util.IndexedContainer
  * @author Amir Moulavi
  */
 
-case class AddExpenseView(dashboard:Main) {
+case class AddExpenseView(dashboard:Main) extends Button.ClickListener {
 
   val addExpensePanel = new Panel("Add an expense")
   val currentExpensesPanel = new Panel("Current expenses")
+  val nameLbl = new Label("Item Name")
+  val priceLbl = new Label("Price")
+  val dateLbl = new Label("Date")
+  val categoryLbl = new Label("Category")
+  val nameTxt = new TextField()
+  val priceTxt = new TextField()
+  val dateInput = new PopupDateField()
+  val categoryTxt = new TextField()
   val addBtn = new Button("Add")
+  
+  addBtn.addListener(this)
 
   def getComponents = {
     val verticalLayout = new VerticalLayout
@@ -48,15 +60,6 @@ case class AddExpenseView(dashboard:Main) {
     gridLayout setHeight "100%"
     gridLayout setWidth "100%"
 
-    val nameLbl = new Label("Item Name")
-    val priceLbl = new Label("Price")
-    val dateLbl = new Label("Date")
-    val categoryLbl = new Label("Category")
-    val nameTxt = new TextField()
-    val priceTxt = new TextField()
-    val dateInput = new PopupDateField()
-    val categoryTxt = new TextField()
-
     dateInput.setResolution(DateField.RESOLUTION_DAY)
     dateInput.setValue(new Date())
 
@@ -68,16 +71,39 @@ case class AddExpenseView(dashboard:Main) {
 
   def constructCurrentExpensesPanel = {
 
+    val queries = new Queries
+    val items = queries.getAllItems
+    
     val dataSource:IndexedContainer = new IndexedContainer()
     dataSource.addContainerProperty("Item name", classOf[String], "")
     dataSource.addContainerProperty("Category", classOf[String], "")
     dataSource.addContainerProperty("Date", classOf[Date], "")
     dataSource.addContainerProperty("Price", classOf[String], "")
 
+    items.foreach { addToContainer(_, dataSource) }
+    
     val table = new Table("Expenses", dataSource)
     table setPageLength 10
     table setWidth "100%"
 
     currentExpensesPanel addComponent table
+  }
+  
+  def buttonClick(event:Button#ClickEvent) = {
+    val commands = new Commands()
+    commands.insertItem(Item(
+      nameTxt.getValue.asInstanceOf[String],
+      priceTxt.getValue.asInstanceOf[String].toDouble,
+      dateInput.getValue.asInstanceOf[Date],
+      categoryTxt.getValue.asInstanceOf[String]))
+  }
+  
+  def addToContainer(record:Item, dataSource:IndexedContainer) = {
+    val itemId = dataSource.addItem()
+    val item = dataSource.getItem(itemId)
+    item.getItemProperty("Item name").setValue(record.itemName)
+    item.getItemProperty("Category").setValue(record.category)
+    item.getItemProperty("Date").setValue(record.date)
+    item.getItemProperty("Price").setValue(record.price)
   }
 }
