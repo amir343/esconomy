@@ -1,5 +1,9 @@
 package com.jayway.esconomy.ui
 
+import com.vaadin.data.Property
+import com.vaadin.data.Property.ValueChangeEvent
+import com.vaadin.ui.Tree
+
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
  *
@@ -44,4 +48,13 @@ case class Settings() extends TreeItem {
 
 case class AddCategory() extends TreeItem {
   override val title = "Add a category"
+}
+
+case class MenuItemValueChangeListener(dashboard:Main) extends Property.ValueChangeListener {
+  def valueChange(event:ValueChangeEvent) {
+    event.getProperty.getValue.asInstanceOf[TreeItem] match {
+      case AddExpense() => dashboard switchToAddExpenseView
+      case _ => println("No")
+    }
+  }
 }
