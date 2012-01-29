@@ -1,9 +1,10 @@
 package com.jayway.esconomy.ui
 
 import com.vaadin.ui._
-import com.jayway.esconomy.domain.Item
 import java.util.Date
 import com.jayway.esconomy.dao.Commands
+import com.jayway.esconomy.domain.Item
+
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -22,12 +23,8 @@ import com.jayway.esconomy.dao.Commands
  *
  * @author Amir Moulavi
  */
+trait ExpenseForm {
 
-case class AddExpenseView(dashboard:Main) extends Button.ClickListener {
-
-  val addExpensePanel = new Panel("Add an expense")
-  val currentExpenseTable = new ExpenseTable
-  val currentExpensesPanel = new Panel("Current expenses")
   val nameLbl = new Label("Item Name")
   val priceLbl = new Label("Price")
   val dateLbl = new Label("Date")
@@ -36,24 +33,8 @@ case class AddExpenseView(dashboard:Main) extends Button.ClickListener {
   val priceTxt = new TextField()
   val dateInput = new PopupDateField()
   val categoryTxt = new TextField()
-  val addBtn = new Button("Add")
-  
-  addBtn.addListener(this)
 
-  def getComponents = {
-    val verticalLayout = new VerticalLayout
-    constructAddExpensePanel
-    constructCurrentExpensesPanel
-    addExpensePanel setWidth "50%"
-    currentExpensesPanel setWidth "100%"
-    verticalLayout addComponent addExpensePanel
-    verticalLayout addComponent currentExpensesPanel
-    verticalLayout setSpacing true
-    verticalLayout setMargin true
-    verticalLayout
-  }
-  
-  def constructAddExpensePanel = {
+  def construct(btn:Button) = {
     val gridLayout = new GridLayout(2,5)
     gridLayout setSpacing true
     gridLayout setHeight "100%"
@@ -62,16 +43,24 @@ case class AddExpenseView(dashboard:Main) extends Button.ClickListener {
     dateInput.setResolution(DateField.RESOLUTION_DAY)
     dateInput.setValue(new Date())
 
-    val components = List(nameLbl, nameTxt, priceLbl, priceTxt, dateLbl, dateInput, categoryLbl, categoryTxt, addBtn)
+    val components = List(nameLbl, nameTxt, priceLbl, priceTxt, dateLbl, dateInput, categoryLbl, categoryTxt, btn)
     components foreach { gridLayout.addComponent(_) }
-    
-    addExpensePanel addComponent gridLayout
+    gridLayout
   }
 
-  def constructCurrentExpensesPanel = {
-    currentExpensesPanel addComponent currentExpenseTable
+  def getComponents:GridLayout
+
+}
+
+class AddExpenseForm(currentExpenseTable:ExpenseTable) extends ExpenseForm with Button.ClickListener {
+
+  val addBtn = new Button("Add")
+  addBtn addListener this
+
+  def getComponents():GridLayout = {
+    construct(addBtn)
   }
-  
+
   def buttonClick(event:Button#ClickEvent) = {
     val commands = new Commands()
     commands.saveItem(Item(
@@ -82,5 +71,34 @@ case class AddExpenseView(dashboard:Main) extends Button.ClickListener {
 
     currentExpenseTable getAllItems()
   }
-  
+
+}
+
+class EditExpenseForm(val currentExpenseTable:ExpenseTable, val item:Item, val window:Window) extends ExpenseForm with Button.ClickListener {
+
+  val editBtn = new Button("Edit")
+  editBtn addListener this
+
+  nameTxt.setValue(item.itemName)
+  priceTxt.setValue(item.price.toString)
+  dateInput.setValue(item.date)
+  categoryTxt.setValue(item.category)
+
+  def getComponents():GridLayout = {
+    construct(editBtn)
+  }
+
+  def buttonClick(event:Button#ClickEvent) = {
+    val commands = new Commands()
+    commands.saveItem(Item(
+      item.id,
+      nameTxt.getValue.asInstanceOf[String],
+      priceTxt.getValue.asInstanceOf[String].toDouble,
+      dateInput.getValue.asInstanceOf[Date],
+      categoryTxt.getValue.toString))
+
+    currentExpenseTable getAllItems()
+    (window.getParent).removeWindow(window)
+  }
+
 }
