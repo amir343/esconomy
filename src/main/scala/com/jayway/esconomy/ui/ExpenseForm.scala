@@ -4,6 +4,7 @@ import com.vaadin.ui._
 import java.util.Date
 import com.jayway.esconomy.dao.Commands
 import com.jayway.esconomy.domain.Item
+import com.vaadin.ui.Window.Notification
 
 
 /**
@@ -69,6 +70,7 @@ class AddExpenseForm(currentExpenseTable:ExpenseTable) extends ExpenseForm with 
       date = dateInput.getValue.asInstanceOf[Date],
       category = categoryTxt.getValue.toString))
 
+    addBtn.getWindow.showNotification("Notification", "Item '" + nameTxt.getValue + "' is added", Notification.TYPE_TRAY_NOTIFICATION)
     currentExpenseTable getAllItems()
   }
 

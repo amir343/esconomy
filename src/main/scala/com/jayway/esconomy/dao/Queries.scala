@@ -2,6 +2,8 @@ package com.jayway.esconomy.dao
 
 import com.jayway.esconomy.db.MongoOps
 import com.jayway.esconomy.domain.Item
+import collection.JavaConversions._
+import java.util.Calendar
 
 
 /**
@@ -25,6 +27,15 @@ class Queries {
 
   def getAllItems = {
     MongoOps.mongoOperations.findAll(classOf[Item], "items")
+  }
+  
+  def getAllItemsIn(year:Int, month:Int) = {
+    val cal = Calendar.getInstance()
+    val list = MongoOps.mongoOperations.findAll(classOf[Item], "items")
+    list.filter { x =>
+      cal.setTime(x.date)
+      if (cal.get(Calendar.YEAR) == year && cal.get(Calendar.MONTH) == month) true else false
+    }
   }
 
 
