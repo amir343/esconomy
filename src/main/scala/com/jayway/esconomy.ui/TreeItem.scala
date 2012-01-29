@@ -54,7 +54,7 @@ case class MenuItemValueChangeListener(dashboard:Main) extends Property.ValueCha
   def valueChange(event:ValueChangeEvent) {
     event.getProperty.getValue.asInstanceOf[TreeItem] match {
       case AddExpense() => dashboard switchToAddExpenseView
-      case _ => println("No")
+      case _ => println("No such item found")
     }
   }
 }

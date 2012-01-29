@@ -1,6 +1,8 @@
 package com.jayway.esconomy.domain
 
-import java.util.Date
+import java.util.{Date, UUID}
+import org.bson.types.ObjectId
+
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -20,4 +22,8 @@ import java.util.Date
  * @author Amir Moulavi
  */
 
-case class Item(itemName:String, price:Double, date:Date, category:String)
+case class Item(id:String = UUID.randomUUID().toString,
+                itemName:String = "Untitle",
+                price:Double = 0.0,
+                date:Date = new Date(),
+                category:String = "Unknown category")

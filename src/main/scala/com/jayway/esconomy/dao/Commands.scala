@@ -2,6 +2,7 @@ package com.jayway.esconomy.dao
 
 import com.jayway.esconomy.domain.Item
 import com.jayway.esconomy.db.MongoOps._
+import org.springframework.data.mongodb.core.query.{Criteria, Query}
 
 
 /**
@@ -23,8 +24,12 @@ import com.jayway.esconomy.db.MongoOps._
  */
 class Commands {
 
-  def insertItem(item:Item) {
+  def saveItem(item:Item) {
     mongoOperations.save(item, "items")
+  }
+
+  def deleteItem(item:Item) {
+    mongoOperations.remove(item, "items")
   }
 
 }

@@ -1,11 +1,9 @@
 package com.jayway.esconomy.ui
 
 import com.vaadin.ui._
-import com.vaadin.data.util.IndexedContainer
 import com.jayway.esconomy.domain.Item
 import java.util.Date
-import com.jayway.esconomy.dao.{Queries, Commands}
-import scala.collection.JavaConversions._
+import com.jayway.esconomy.dao.Commands
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -28,6 +26,7 @@ import scala.collection.JavaConversions._
 case class AddExpenseView(dashboard:Main) extends Button.ClickListener {
 
   val addExpensePanel = new Panel("Add an expense")
+  val currentExpenseTable = new ExpenseTable
   val currentExpensesPanel = new Panel("Current expenses")
   val nameLbl = new Label("Item Name")
   val priceLbl = new Label("Price")
@@ -70,40 +69,18 @@ case class AddExpenseView(dashboard:Main) extends Button.ClickListener {
   }
 
   def constructCurrentExpensesPanel = {
-
-    val queries = new Queries
-    val items = queries.getAllItems
-    
-    val dataSource:IndexedContainer = new IndexedContainer()
-    dataSource.addContainerProperty("Item name", classOf[String], "")
-    dataSource.addContainerProperty("Category", classOf[String], "")
-    dataSource.addContainerProperty("Date", classOf[Date], "")
-    dataSource.addContainerProperty("Price", classOf[String], "")
-
-    items.foreach { addToContainer(_, dataSource) }
-    
-    val table = new Table("Expenses", dataSource)
-    table setPageLength 10
-    table setWidth "100%"
-
-    currentExpensesPanel addComponent table
+    currentExpensesPanel addComponent currentExpenseTable
   }
   
   def buttonClick(event:Button#ClickEvent) = {
     val commands = new Commands()
-    commands.insertItem(Item(
-      nameTxt.getValue.asInstanceOf[String],
-      priceTxt.getValue.asInstanceOf[String].toDouble,
-      dateInput.getValue.asInstanceOf[Date],
-      categoryTxt.getValue.asInstanceOf[String]))
+    commands.saveItem(Item(
+      itemName = nameTxt.getValue.asInstanceOf[String],
+      price = priceTxt.getValue.asInstanceOf[String].toDouble,
+      date = dateInput.getValue.asInstanceOf[Date],
+      category = categoryTxt.getValue.toString))
+
+    currentExpenseTable getAllItems()
   }
   
-  def addToContainer(record:Item, dataSource:IndexedContainer) = {
-    val itemId = dataSource.addItem()
-    val item = dataSource.getItem(itemId)
-    item.getItemProperty("Item name").setValue(record.itemName)
-    item.getItemProperty("Category").setValue(record.category)
-    item.getItemProperty("Date").setValue(record.date)
-    item.getItemProperty("Price").setValue(record.price)
-  }
 }

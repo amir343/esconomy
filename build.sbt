@@ -20,6 +20,6 @@ libraryDependencies ++= Seq(
   "org.mongodb" % "mongo-java-driver" % "2.6",
   "org.springframework" % "spring-core" % "3.0.5.RELEASE",
   "org.springframework" % "spring-context" % "3.0.5.RELEASE",
-  "org.springframework.data" % "spring-data-mongodb" % "1.0.0.M4",
+  "org.springframework.data" % "spring-data-mongodb" % "1.0.0.RC1",
   "cglib" % "cglib" % "2.2"
 )
