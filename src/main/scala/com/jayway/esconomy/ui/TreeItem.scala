@@ -53,7 +53,8 @@ case class AddCategory() extends TreeItem {
 case class MenuItemValueChangeListener(dashboard:Main) extends Property.ValueChangeListener {
   def valueChange(event:ValueChangeEvent) {
     event.getProperty.getValue.asInstanceOf[TreeItem] match {
-      case AddExpense() => dashboard switchToAddExpenseView
+      case AddExpense()  => dashboard switchToAddExpenseView
+      case AddCategory() => dashboard switchToAddCategoryView
       case _ => println("No such item found")
     }
   }
