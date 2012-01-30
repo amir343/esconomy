@@ -39,6 +39,7 @@ class ExpenseTable extends Table {
   this setWidth "100%"
   this setSelectable true
   this setFooterVisible true
+  this setImmediate true
 
   val dataSource:IndexedContainer = new IndexedContainer()
   
@@ -98,11 +99,6 @@ class ExpenseTable extends Table {
     this setVisibleColumns Array[AnyRef]("Item name", "Category", "Date", "Price")
   }
   
-  def buildTable(expenses:List[Item]) = {
-
-
-  }
-
   def addToContainer(record:Item, dataSource:IndexedContainer) = {
     val itemId = dataSource.addItem()
     val item = dataSource.getItem(itemId)

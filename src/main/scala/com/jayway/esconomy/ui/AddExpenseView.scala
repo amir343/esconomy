@@ -4,6 +4,7 @@ import com.vaadin.ui._
 import java.util.{Calendar, Date}
 import com.vaadin.data.Property
 import com.vaadin.data.Property.ValueChangeEvent
+import com.vaadin.ui.AbstractSelect.Filtering
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -66,11 +67,14 @@ case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
     (1900 to cal.get(Calendar.YEAR)).map { _.toString }.reverse.foreach(yearCombo.addItem(_))
     yearCombo.setValue(cal.get(Calendar.YEAR).toString)
     yearCombo addListener this
+    yearCombo setFilteringMode Filtering.FILTERINGMODE_OFF
+    yearCombo setImmediate true
 
     monthCombo addListener this
     months.foreach(monthCombo.addItem _)
-
     monthCombo.setValue(months.apply(cal.get(Calendar.MONTH)))
+    monthCombo setFilteringMode Filtering.FILTERINGMODE_OFF
+    monthCombo setImmediate true
 
     hori.addComponent(label)
     hori.addComponent(yearCombo)
@@ -82,6 +86,8 @@ case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
   def valueChange(event:ValueChangeEvent) {
     if ( yearCombo.getValue != null && monthCombo.getValue != null ) {
       currentExpenseTable.getAllItemsIn(yearCombo.getValue.toString, months.indexOf(monthCombo.getValue.toString).toString)
+    } else {
+      println("One of the combo was null!")
     }
   }
 
