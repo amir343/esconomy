@@ -1,10 +1,10 @@
 package com.jayway.esconomy.ui
 
-import com.vaadin.ui._
 import java.util.{Calendar, Date}
 import com.vaadin.data.Property
-import com.vaadin.data.Property.ValueChangeEvent
 import com.vaadin.ui.AbstractSelect.Filtering
+import com.vaadin.ui._
+import com.vaadin.data.Property.{ValueChangeListener, ValueChangeEvent}
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -31,8 +31,10 @@ case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
   val currentExpensesPanel = new Panel("Current expenses")
 
   val months = List("January", "Feburary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
+  val label = new Label("Period")
   val yearCombo = new ComboBox()
   val monthCombo = new ComboBox()
+  val showAllChkBox = new CheckBox("Show all items", false)
 
   def getComponents = {
     val verticalLayout = new VerticalLayout
@@ -48,7 +50,7 @@ case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
   }
   
   def constructAddExpensePanel = {
-    val addExpenseForm = new AddExpenseForm(currentExpenseTable)
+    val addExpenseForm = new AddExpenseForm(currentExpenseTable, this)
     addExpensePanel addComponent (addExpenseForm.getComponents())
   }
 
@@ -63,24 +65,46 @@ case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
     hori setSpacing true
     hori setMargin true
 
-    val label = new Label("Period")
     (1900 to cal.get(Calendar.YEAR)).map { _.toString }.reverse.foreach(yearCombo.addItem(_))
     yearCombo.setValue(cal.get(Calendar.YEAR).toString)
     yearCombo addListener this
-    yearCombo setFilteringMode Filtering.FILTERINGMODE_OFF
+    yearCombo setFilteringMode Filtering.FILTERINGMODE_STARTSWITH
     yearCombo setImmediate true
 
     monthCombo addListener this
     months.foreach(monthCombo.addItem _)
     monthCombo.setValue(months.apply(cal.get(Calendar.MONTH)))
-    monthCombo setFilteringMode Filtering.FILTERINGMODE_OFF
+    monthCombo setFilteringMode Filtering.FILTERINGMODE_STARTSWITH
     monthCombo setImmediate true
+
+    showAllChkBox.setImmediate(true)
+    showAllChkBox.addListener(new ValueChangeListener {
+      def valueChange(event: ValueChangeEvent) {
+        showAllChkBox.getValue.asInstanceOf[Boolean] match {
+          case true  => disablePeriodConfigs(); currentExpenseTable.getAllItems()
+          case false => enablePeriodConfig(); currentExpenseTable.getAllItemsIn(yearCombo.getValue.toString, months.indexOf(monthCombo.getValue.toString).toString)
+        }
+      }
+    })
 
     hori.addComponent(label)
     hori.addComponent(yearCombo)
     hori.addComponent(monthCombo)
+    hori.addComponent(showAllChkBox)
 
     hori
+  }
+
+  def disablePeriodConfigs() = {
+    label.setEnabled(false)
+    yearCombo.setEnabled(false)
+    monthCombo.setEnabled(false)
+  }
+
+  def enablePeriodConfig() = {
+    label.setEnabled(true)
+    yearCombo.setEnabled(true)
+    monthCombo.setEnabled(true)
   }
 
   def valueChange(event:ValueChangeEvent) {
@@ -88,6 +112,13 @@ case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
       currentExpenseTable.getAllItemsIn(yearCombo.getValue.toString, months.indexOf(monthCombo.getValue.toString).toString)
     } else {
       println("One of the combo was null!")
+    }
+  }
+
+  def decideTheView() {
+    showAllChkBox.getValue.asInstanceOf[Boolean] match {
+      case true  => currentExpenseTable.getAllItems()
+      case false => currentExpenseTable.getAllItemsIn(yearCombo.getValue.toString, months.indexOf(monthCombo.getValue.toString).toString)
     }
   }
 

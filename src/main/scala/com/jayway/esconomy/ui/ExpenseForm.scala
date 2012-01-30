@@ -53,7 +53,7 @@ trait ExpenseForm {
 
 }
 
-class AddExpenseForm(currentExpenseTable:ExpenseTable) extends ExpenseForm with Button.ClickListener {
+class AddExpenseForm(currentExpenseTable:ExpenseTable, expenseView:AddExpenseView) extends ExpenseForm with Button.ClickListener {
 
   val addBtn = new Button("Add")
   addBtn addListener this
@@ -71,7 +71,10 @@ class AddExpenseForm(currentExpenseTable:ExpenseTable) extends ExpenseForm with 
       category = categoryTxt.getValue.toString))
 
     addBtn.getWindow.showNotification("Notification", "Item '" + nameTxt.getValue + "' is added", Notification.TYPE_TRAY_NOTIFICATION)
-    currentExpenseTable getAllItems()
+    expenseView decideTheView()
+    nameTxt.setValue("")
+    categoryTxt.setValue("")
+    priceTxt.setValue("")
   }
 
 }
