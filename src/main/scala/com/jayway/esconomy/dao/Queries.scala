@@ -1,9 +1,9 @@
 package com.jayway.esconomy.dao
 
-import com.jayway.esconomy.db.MongoOps
-import com.jayway.esconomy.domain.Item
+import com.jayway.esconomy.db.MongoOps._
 import collection.JavaConversions._
 import java.util.Calendar
+import com.jayway.esconomy.domain.{Category, Item}
 
 
 /**
@@ -26,19 +26,23 @@ import java.util.Calendar
 class Queries {
 
   def getAllItems = {
-    try { Right(MongoOps.mongoOperations.findAll(classOf[Item], "items")) }
+    try { Right(mongoOperations.findAll(classOf[Item], itemCollection)) }
     catch { case e => Left("Error happened: " + e.getMessage) }
   }
   
   def getAllItemsIn(year:Int, month:Int) = {
     val cal = Calendar.getInstance()
     try {
-      Right(MongoOps.mongoOperations.findAll(classOf[Item], "items").filter { x =>
+      Right(mongoOperations.findAll(classOf[Item], itemCollection).filter { x =>
         cal.setTime(x.date)
         if (cal.get(Calendar.YEAR) == year && cal.get(Calendar.MONTH) == month) true else false
       })
     } catch { case e => Left("Error happened: " + e.getMessage)}
-    
+  }
+
+  def getAllCategories = {
+    try { Right(mongoOperations.findAll(classOf[Category], categoryCollection)) }
+    catch { case e => Left("Error happened: " + e.getMessage) }
   }
 
 }

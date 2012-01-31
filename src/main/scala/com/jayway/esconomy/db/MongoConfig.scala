@@ -34,4 +34,6 @@ class MongoConfig extends AbstractMongoConfiguration {
 object MongoOps {
   val ctx: ApplicationContext = new AnnotationConfigApplicationContext(classOf[MongoConfig])
   val mongoOperations: MongoOperations = ctx.getBean("mongoTemplate").asInstanceOf[MongoOperations]
+  val categoryCollection = "categories"
+  val itemCollection = "items"
 }

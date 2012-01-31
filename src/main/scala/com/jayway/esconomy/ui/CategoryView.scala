@@ -1,6 +1,9 @@
 package com.jayway.esconomy.ui
 
 import com.vaadin.ui._
+import com.jayway.esconomy.dao.Commands
+import com.jayway.esconomy.domain.Category
+import com.vaadin.ui.Window.Notification
 
 
 /**
@@ -21,11 +24,13 @@ import com.vaadin.ui._
  * @author Amir Moulavi
  */
 
-case class CategoryView(dashboard:Main) {
+case class CategoryView(dashboard:Main) extends Button.ClickListener {
 
   val label = new Label("Category")
   val categories = new TextField()
   val addBtn = new Button("Add")
+  addBtn addListener this
+  val categoryTable = new CategoryTable(dashboard.tree)
 
   def getComponents() = {
     val panel = new Panel("Categories")
@@ -36,6 +41,7 @@ case class CategoryView(dashboard:Main) {
     verticalLayout setMargin true
     panel setImmediate true
     verticalLayout.addComponent(getAddCategoryLayout())
+    verticalLayout.addComponent(categoryTable)
     panel.addComponent(verticalLayout)
     panel
   }
@@ -47,6 +53,15 @@ case class CategoryView(dashboard:Main) {
     hori.setSpacing(true)
     List(label, categories, addBtn).foreach { hori.addComponent(_) }
     hori
+  }
+
+  def buttonClick(event:Button#ClickEvent) = {
+    val commands = new Commands
+    commands.saveCategory(Category(category = categories.getValue.toString  ))
+    addBtn.getWindow.showNotification("Notification", "Category '" + categories.getValue + "' is added", Notification.TYPE_TRAY_NOTIFICATION)
+    categoryTable.getAllItems()
+    categories.setValue("")
+
   }
 
 }

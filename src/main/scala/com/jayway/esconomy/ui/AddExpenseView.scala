@@ -24,10 +24,10 @@ import com.vaadin.data.Property.{ValueChangeListener, ValueChangeEvent}
  * @author Amir Moulavi
  */
 
-case class AddExpenseView(dashboard:Main, tree:Tree) extends Property.ValueChangeListener {
+case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
 
   val addExpensePanel = new Panel("Add an expense")
-  val currentExpenseTable = new ExpenseTable(tree)
+  val currentExpenseTable = new ExpenseTable(dashboard.tree)
   val currentExpensesPanel = new Panel("Current expenses")
 
   val months = List("January", "Feburary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")

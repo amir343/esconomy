@@ -104,7 +104,7 @@ class Main extends Application {
   
   def switchToAddExpenseView() {
     centerLayout.removeAllComponents()
-    centerLayout.addComponent(AddExpenseView(this, tree).getComponents)
+    centerLayout.addComponent(AddExpenseView(this).getComponents)
   }
 
   def switchToAddCategoryView() {

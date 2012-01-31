@@ -1,8 +1,8 @@
 package com.jayway.esconomy.dao
 
-import com.jayway.esconomy.domain.Item
 import com.jayway.esconomy.db.MongoOps._
-import org.springframework.data.mongodb.core.query.{Criteria, Query}
+import com.jayway.esconomy.domain.{Category, Item}
+import org.springframework.data.mongodb.core.query.{Update, Query, Criteria}
 
 
 /**
@@ -25,11 +25,28 @@ import org.springframework.data.mongodb.core.query.{Criteria, Query}
 class Commands {
 
   def saveItem(item:Item) {
-    mongoOperations.save(item, "items")
+    mongoOperations.save(item, itemCollection)
   }
 
   def deleteItem(item:Item) {
-    mongoOperations.remove(item, "items")
+    mongoOperations.remove(item, itemCollection)
+  }
+
+  def saveCategory(category:Category) {
+    mongoOperations.save(category, categoryCollection)
+  }
+
+  def updateCategory(category:Category) {
+    val oldCategory = mongoOperations.findOne(new Query(Criteria.where("_id").is(category.id)), classOf[Category], categoryCollection)
+    mongoOperations.save(category, categoryCollection)
+    mongoOperations.updateMulti(new Query(Criteria.where("category").is(oldCategory.category) ), new Update().set("category", category.category), itemCollection)
+  }
+
+
+
+  def deleteCategory(category:Category) {
+    mongoOperations.remove(category, categoryCollection)
+    mongoOperations.updateMulti(new Query(Criteria.where("category").is(category.category) ), new Update().set("category", "UNKNOWN CATEGORY"), itemCollection)
   }
 
 }
