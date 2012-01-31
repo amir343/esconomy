@@ -1,10 +1,12 @@
 package com.jayway.esconomy.ui
 
-import com.vaadin.ui._
 import java.util.Date
-import com.jayway.esconomy.dao.Commands
 import com.jayway.esconomy.domain.Item
 import com.vaadin.ui.Window.Notification
+import com.vaadin.ui._
+import com.vaadin.ui.AbstractSelect.Filtering
+import com.jayway.esconomy.dao.{Queries, Commands}
+import collection.JavaConversions._
 
 
 /**
@@ -33,9 +35,17 @@ trait ExpenseForm {
   val nameTxt = new TextField()
   val priceTxt = new TextField()
   val dateInput = new PopupDateField()
-  val categoryTxt = new TextField()
+  val categoryCombo = new ComboBox()
+  categoryCombo setFilteringMode Filtering.FILTERINGMODE_STARTSWITH
+  categoryCombo setImmediate true
+  categoryCombo setNullSelectionAllowed false
 
   def construct(btn:Button) = {
+    val queries = new Queries
+    queries.getAllCategories match {
+      case Left(x) =>
+      case Right(x) => x.foreach { c => categoryCombo.addItem(c.category) }
+    }
     val gridLayout = new GridLayout(2,5)
     gridLayout setSpacing true
     gridLayout setHeight "100%"
@@ -44,7 +54,7 @@ trait ExpenseForm {
     dateInput.setResolution(DateField.RESOLUTION_DAY)
     dateInput.setValue(new Date())
 
-    val components = List(nameLbl, nameTxt, priceLbl, priceTxt, dateLbl, dateInput, categoryLbl, categoryTxt, btn)
+    val components = List(nameLbl, nameTxt, priceLbl, priceTxt, dateLbl, dateInput, categoryLbl, categoryCombo, btn)
     components foreach { gridLayout.addComponent(_) }
     gridLayout
   }
@@ -68,12 +78,12 @@ class AddExpenseForm(currentExpenseTable:ExpenseTable, expenseView:AddExpenseVie
       itemName = nameTxt.getValue.asInstanceOf[String],
       price = priceTxt.getValue.asInstanceOf[String].toDouble,
       date = dateInput.getValue.asInstanceOf[Date],
-      category = categoryTxt.getValue.toString))
+      category = categoryCombo.getValue.toString))
 
     addBtn.getWindow.showNotification("Notification", "Item '" + nameTxt.getValue + "' is added", Notification.TYPE_TRAY_NOTIFICATION)
     expenseView decideTheView()
     nameTxt.setValue("")
-    categoryTxt.setValue("")
+    categoryCombo.setValue("")
     priceTxt.setValue("")
   }
 
@@ -87,7 +97,7 @@ class EditExpenseForm(val currentExpenseTable:ExpenseTable, val item:Item, val w
   nameTxt.setValue(item.itemName)
   priceTxt.setValue(item.price.toString)
   dateInput.setValue(item.date)
-  categoryTxt.setValue(item.category)
+  categoryCombo.setValue(item.category)
 
   def getComponents():GridLayout = {
     construct(editBtn)
@@ -100,7 +110,7 @@ class EditExpenseForm(val currentExpenseTable:ExpenseTable, val item:Item, val w
       nameTxt.getValue.asInstanceOf[String],
       priceTxt.getValue.asInstanceOf[String].toDouble,
       dateInput.getValue.asInstanceOf[Date],
-      categoryTxt.getValue.toString))
+      categoryCombo.getValue.toString))
 
     currentExpenseTable getAllItems()
     (window.getParent).removeWindow(window)

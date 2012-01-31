@@ -42,8 +42,6 @@ class Commands {
     mongoOperations.updateMulti(new Query(Criteria.where("category").is(oldCategory.category) ), new Update().set("category", category.category), itemCollection)
   }
 
-
-
   def deleteCategory(category:Category) {
     mongoOperations.remove(category, categoryCollection)
     mongoOperations.updateMulti(new Query(Criteria.where("category").is(category.category) ), new Update().set("category", "UNKNOWN CATEGORY"), itemCollection)
