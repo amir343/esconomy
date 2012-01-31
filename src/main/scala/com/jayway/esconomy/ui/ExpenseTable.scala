@@ -5,10 +5,10 @@ import com.jayway.esconomy.domain.Item
 import com.vaadin.event.Action
 import com.vaadin.event.Action.Handler
 import com.jayway.esconomy.dao.{Commands, Queries}
-import com.vaadin.ui.{Panel, Window, Table}
 import com.vaadin.data.{Item => VaadinItem}
 import java.util.Date
 import collection.JavaConversions._
+import com.vaadin.ui.{Tree, Panel, Window, Table}
 
 
 /**
@@ -28,7 +28,7 @@ import collection.JavaConversions._
  *
  * @author Amir Moulavi
  */
-class ExpenseTable extends Table {
+class ExpenseTable(tree:Tree) extends Table {
 
   val editAction = new Action("Edit")
   val removeAction = new Action("Remove")
@@ -64,14 +64,18 @@ class ExpenseTable extends Table {
   }}
 
   def getAllItems() = {
-    val expenses = queries.getAllItems
     this removeAllItems()
     dataSource removeAllItems()
-
     var totalSum = 0.0
-    expenses.foreach { x =>
-      addToContainer(x, dataSource)
-      totalSum += x.price
+
+    queries.getAllItems match {
+      case Left(x) => tree.getWindow.showNotification(x.toString)
+      case Right(x) => {
+        x.foreach { i =>
+          addToContainer(i, dataSource)
+          totalSum += i.price
+        }
+      }
     }
 
     this setColumnFooter ("Item name", "Total expenses")
@@ -82,14 +86,18 @@ class ExpenseTable extends Table {
   }
   
   def getAllItemsIn(year:String, month:String) = {
-    val expenses = queries.getAllItemsIn(year.toInt, month.toInt)
     this removeAllItems()
     dataSource removeAllItems()
-
     var totalSum = 0.0
-    expenses.foreach { x =>
-      addToContainer(x, dataSource)
-      totalSum += x.price
+
+    queries.getAllItemsIn(year.toInt, month.toInt) match {
+      case Left(x) =>  tree.getWindow.showNotification(x)
+      case Right(x) => {
+        x.foreach { i =>
+          addToContainer(i, dataSource)
+          totalSum += i.price
+        }
+      }
     }
 
     this setColumnFooter ("Item name", "Total expenses")

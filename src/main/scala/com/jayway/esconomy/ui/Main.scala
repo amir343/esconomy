@@ -26,6 +26,7 @@ class Main extends Application {
 
   val items = List(MyEconomy(), AddExpense(), Reports(), Settings(), AddCategory())
   val centerLayout = new VerticalLayout
+  val tree = new Tree
 
   def init() {
 
@@ -84,7 +85,6 @@ class Main extends Application {
     nav setSpacing true
     nav setMargin true
 
-    val tree = new Tree
     tree setImmediate true
 
     items foreach { tree addItem _ }
@@ -104,7 +104,7 @@ class Main extends Application {
   
   def switchToAddExpenseView() {
     centerLayout.removeAllComponents()
-    centerLayout.addComponent(AddExpenseView(this).getComponents)
+    centerLayout.addComponent(AddExpenseView(this, tree).getComponents)
   }
 
   def switchToAddCategoryView() {

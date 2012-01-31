@@ -26,17 +26,19 @@ import java.util.Calendar
 class Queries {
 
   def getAllItems = {
-    MongoOps.mongoOperations.findAll(classOf[Item], "items")
+    try { Right(MongoOps.mongoOperations.findAll(classOf[Item], "items")) }
+    catch { case e => Left("Error happened: " + e.getMessage) }
   }
   
   def getAllItemsIn(year:Int, month:Int) = {
     val cal = Calendar.getInstance()
-    val list = MongoOps.mongoOperations.findAll(classOf[Item], "items")
-    list.filter { x =>
-      cal.setTime(x.date)
-      if (cal.get(Calendar.YEAR) == year && cal.get(Calendar.MONTH) == month) true else false
-    }
+    try {
+      Right(MongoOps.mongoOperations.findAll(classOf[Item], "items").filter { x =>
+        cal.setTime(x.date)
+        if (cal.get(Calendar.YEAR) == year && cal.get(Calendar.MONTH) == month) true else false
+      })
+    } catch { case e => Left("Error happened: " + e.getMessage)}
+    
   }
-
 
 }
