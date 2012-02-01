@@ -1,6 +1,6 @@
 package com.jayway.esconomy.ui
 
-import java.util.{Calendar, Date}
+import java.util.Calendar
 import com.vaadin.data.Property
 import com.vaadin.ui.AbstractSelect.Filtering
 import com.vaadin.ui._

@@ -1,6 +1,6 @@
 package com.jayway.esconomy.domain
 
-import java.util.{Date, UUID}
+import java.util.UUID
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)

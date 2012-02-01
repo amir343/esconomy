@@ -16,10 +16,6 @@
             <param-name>application</param-name>
             <param-value>com.jayway.esconomy.ui.Main</param-value>
         </init-param>
-        <init-param>
-            <param-name>widgetset</param-name>
-            <param-value>widgetset</param-value>
-        </init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>Scala Vaadin Application</servlet-name>

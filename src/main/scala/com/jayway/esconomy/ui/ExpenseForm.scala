@@ -6,7 +6,6 @@ import com.vaadin.ui.Window.Notification
 import com.vaadin.ui.AbstractSelect.Filtering
 import com.jayway.esconomy.dao.{Queries, Commands}
 import collection.JavaConversions._
-import org.vaadin.autoreplacefield.DoubleField
 import com.vaadin.ui._
 
 

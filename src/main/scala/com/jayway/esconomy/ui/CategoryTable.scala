@@ -5,7 +5,7 @@ import com.vaadin.data.util.IndexedContainer
 import com.vaadin.event.Action.Handler
 import com.vaadin.data.{Item => VaadinItem }
 import collection.JavaConversions._
-import com.jayway.esconomy.domain.{Item, Category}
+import com.jayway.esconomy.domain.Category
 import com.vaadin.ui.Button.ClickListener
 import com.vaadin.ui._
 import com.jayway.esconomy.dao.{Commands, Queries}

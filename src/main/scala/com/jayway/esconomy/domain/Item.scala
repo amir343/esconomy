@@ -1,7 +1,6 @@
 package com.jayway.esconomy.domain
 
 import java.util.{Date, UUID}
-import org.bson.types.ObjectId
 
 
 /**
