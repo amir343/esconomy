@@ -27,7 +27,7 @@ class Queries {
 
   def getAllItems = {
     try { Right(mongoOperations.findAll(classOf[Item], itemCollection)) }
-    catch { case e => Left("Error happened: " + e.getMessage) }
+    catch { case e => Left(e.getMessage) }
   }
   
   def getAllItemsIn(year:Int, month:Int) = {
@@ -37,12 +37,12 @@ class Queries {
         cal.setTime(x.date)
         if (cal.get(Calendar.YEAR) == year && cal.get(Calendar.MONTH) == month) true else false
       })
-    } catch { case e => Left("Error happened: " + e.getMessage)}
+    } catch { case e => Left(e.getMessage)}
   }
 
   def getAllCategories = {
     try { Right(mongoOperations.findAll(classOf[Category], categoryCollection)) }
-    catch { case e => Left("Error happened: " + e.getMessage) }
+    catch { case e => Left(e.getMessage) }
   }
 
 }

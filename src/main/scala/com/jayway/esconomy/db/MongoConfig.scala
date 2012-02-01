@@ -26,7 +26,7 @@ import org.springframework.context.ApplicationContext
 @Configuration
 class MongoConfig extends AbstractMongoConfiguration {
 
-  def getDatabaseName:String = "mydb"
+  def getDatabaseName:String = "esconomy"
   def mongo:Mongo = new Mongo("localhost")
 
 }

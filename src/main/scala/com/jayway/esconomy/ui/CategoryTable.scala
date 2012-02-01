@@ -9,6 +9,7 @@ import com.jayway.esconomy.domain.{Item, Category}
 import com.vaadin.ui.Button.ClickListener
 import com.vaadin.ui._
 import com.jayway.esconomy.dao.{Commands, Queries}
+import com.vaadin.ui.Window.Notification
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -65,7 +66,7 @@ class CategoryTable(tree:Tree) extends Table {
     dataSource removeAllItems()
 
     queries.getAllCategories match {
-      case Left(x) => tree.getWindow.showNotification(x.toString)
+      case Left(x) => tree.getWindow.showNotification("Error", x.toString, Notification.TYPE_ERROR_MESSAGE)
       case Right(x) => { x.foreach { i => addToContainer(i, dataSource)} }
     }
 

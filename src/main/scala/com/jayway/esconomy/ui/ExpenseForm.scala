@@ -3,10 +3,11 @@ package com.jayway.esconomy.ui
 import java.util.Date
 import com.jayway.esconomy.domain.Item
 import com.vaadin.ui.Window.Notification
-import com.vaadin.ui._
 import com.vaadin.ui.AbstractSelect.Filtering
 import com.jayway.esconomy.dao.{Queries, Commands}
 import collection.JavaConversions._
+import org.vaadin.autoreplacefield.DoubleField
+import com.vaadin.ui._
 
 
 /**
@@ -97,10 +98,11 @@ class EditExpenseForm(val currentExpenseTable:ExpenseTable, val item:Item, val w
   nameTxt.setValue(item.itemName)
   priceTxt.setValue(item.price.toString)
   dateInput.setValue(item.date)
-  categoryCombo.setValue(item.category)
 
   def getComponents():GridLayout = {
-    construct(editBtn)
+    val grid = construct(editBtn)
+    categoryCombo.setValue(item.category)
+    grid
   }
 
   def buttonClick(event:Button#ClickEvent) = {

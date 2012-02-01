@@ -9,6 +9,7 @@ import com.vaadin.data.{Item => VaadinItem}
 import java.util.Date
 import collection.JavaConversions._
 import com.vaadin.ui.{Tree, Panel, Window, Table}
+import com.vaadin.ui.Window.Notification
 
 
 /**
@@ -69,7 +70,7 @@ class ExpenseTable(tree:Tree) extends Table {
     var totalSum = 0.0
 
     queries.getAllItems match {
-      case Left(x) => tree.getWindow.showNotification(x.toString)
+      case Left(x) => tree.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
       case Right(x) => {
         x.foreach { i =>
           addToContainer(i, dataSource)
@@ -91,7 +92,7 @@ class ExpenseTable(tree:Tree) extends Table {
     var totalSum = 0.0
 
     queries.getAllItemsIn(year.toInt, month.toInt) match {
-      case Left(x) =>  tree.getWindow.showNotification(x)
+      case Left(x) =>  tree.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
       case Right(x) => {
         x.foreach { i =>
           addToContainer(i, dataSource)
