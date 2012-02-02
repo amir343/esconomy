@@ -10,6 +10,7 @@ import com.vaadin.ui.Button.ClickListener
 import com.vaadin.ui._
 import com.jayway.esconomy.dao.{Commands, Queries}
 import com.vaadin.ui.Window.Notification
+import com.vaadin.event.ShortcutAction.KeyCode
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -116,6 +117,7 @@ class CategoryTable(tree:Tree) extends Table {
     val categoryTxt = new TextField("Category")
     categoryTxt.setValue(category.category)
     val updateBtn = new Button("Update")
+    updateBtn setClickShortcut KeyCode.ENTER
     val vertical = new VerticalLayout
     vertical.setSpacing(true)
     vertical.setMargin(true)

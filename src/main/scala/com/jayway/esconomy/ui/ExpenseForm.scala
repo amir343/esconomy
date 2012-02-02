@@ -7,6 +7,7 @@ import com.vaadin.ui.AbstractSelect.Filtering
 import com.jayway.esconomy.dao.{Queries, Commands}
 import collection.JavaConversions._
 import com.vaadin.ui._
+import com.vaadin.event.ShortcutAction.KeyCode
 
 
 /**
@@ -66,6 +67,7 @@ trait ExpenseForm {
 class AddExpenseForm(currentExpenseTable:ExpenseTable, expenseView:AddExpenseView) extends ExpenseForm with Button.ClickListener {
 
   val addBtn = new Button("Add")
+  addBtn setClickShortcut KeyCode.ENTER
   addBtn addListener this
 
   def getComponents():GridLayout = {
@@ -92,6 +94,7 @@ class AddExpenseForm(currentExpenseTable:ExpenseTable, expenseView:AddExpenseVie
 class EditExpenseForm(val currentExpenseTable:ExpenseTable, val item:Item, val window:Window) extends ExpenseForm with Button.ClickListener {
 
   val editBtn = new Button("Edit")
+  editBtn setClickShortcut KeyCode.ENTER
   editBtn addListener this
 
   nameTxt.setValue(item.itemName)
