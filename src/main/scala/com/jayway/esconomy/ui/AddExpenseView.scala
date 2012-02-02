@@ -70,12 +70,14 @@ case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
     yearCombo addListener this
     yearCombo setFilteringMode Filtering.FILTERINGMODE_STARTSWITH
     yearCombo setImmediate true
+    yearCombo setNullSelectionAllowed false
 
     monthCombo addListener this
     months.foreach(monthCombo.addItem _)
     monthCombo.setValue(months.apply(cal.get(Calendar.MONTH)))
     monthCombo setFilteringMode Filtering.FILTERINGMODE_STARTSWITH
     monthCombo setImmediate true
+    monthCombo setNullSelectionAllowed false
 
     showAllChkBox.setImmediate(true)
     showAllChkBox.addListener(new ValueChangeListener {
