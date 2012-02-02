@@ -8,6 +8,7 @@ import com.jayway.esconomy.dao.{Queries, Commands}
 import collection.JavaConversions._
 import com.vaadin.ui._
 import com.vaadin.event.ShortcutAction.KeyCode
+import org.vaadin.autoreplacefield.DoubleField
 
 
 /**
@@ -34,9 +35,10 @@ trait ExpenseForm {
   val dateLbl = new Label("Date")
   val categoryLbl = new Label("Category")
   val nameTxt = new TextField()
-  val priceTxt = new TextField()
+  val priceTxt = new DoubleField()
   val dateInput = new PopupDateField()
   val categoryCombo = new ComboBox()
+
   categoryCombo setFilteringMode Filtering.FILTERINGMODE_STARTSWITH
   categoryCombo setImmediate true
   categoryCombo setNullSelectionAllowed false
@@ -79,7 +81,7 @@ class AddExpenseForm(val expenseView:AddExpenseView) extends ExpenseForm with Bu
     val commands = new Commands()
     commands.saveItem(Item(
       itemName = nameTxt.getValue.asInstanceOf[String],
-      price = priceTxt.getValue.asInstanceOf[String].toDouble,
+      price = priceTxt.getValue,
       date = dateInput.getValue.asInstanceOf[Date],
       category = categoryCombo.getValue.toString))
 
@@ -113,7 +115,7 @@ class EditExpenseForm(val expenseView:AddExpenseView, val item:Item, val window:
     commands.saveItem(Item(
       item.id,
       nameTxt.getValue.asInstanceOf[String],
-      priceTxt.getValue.asInstanceOf[String].toDouble,
+      priceTxt.getValue,
       dateInput.getValue.asInstanceOf[Date],
       categoryCombo.getValue.toString))
 
