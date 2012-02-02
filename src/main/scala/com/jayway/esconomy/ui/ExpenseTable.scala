@@ -29,7 +29,7 @@ import com.vaadin.ui.Window.Notification
  *
  * @author Amir Moulavi
  */
-class ExpenseTable(tree:Tree) extends Table {
+class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
 
   val editAction = new Action("Edit")
   val removeAction = new Action("Remove")
@@ -126,7 +126,7 @@ class ExpenseTable(tree:Tree) extends Table {
     editWindow setModal true
     val item = this getItem target
     val row = extractFromTable(item)
-    val editExpenseForm = new EditExpenseForm(this, row, editWindow)
+    val editExpenseForm = new EditExpenseForm(addExpenseView, row, editWindow)
     val verticalLayout = editWindow.getContent
     val panel = new Panel("Edit")
     panel.addComponent(editExpenseForm.getComponents())

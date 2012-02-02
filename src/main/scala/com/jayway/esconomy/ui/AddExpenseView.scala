@@ -27,7 +27,7 @@ import com.vaadin.data.Property.{ValueChangeListener, ValueChangeEvent}
 case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
 
   val addExpensePanel = new Panel("Add an expense")
-  val currentExpenseTable = new ExpenseTable(dashboard.tree)
+  val currentExpenseTable = new ExpenseTable(this, dashboard.tree)
   val currentExpensesPanel = new Panel("Current expenses")
 
   val months = List("January", "Feburary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
@@ -50,7 +50,7 @@ case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
   }
   
   def constructAddExpensePanel = {
-    val addExpenseForm = new AddExpenseForm(currentExpenseTable, this)
+    val addExpenseForm = new AddExpenseForm(this)
     addExpensePanel addComponent (addExpenseForm.getComponents())
   }
 

@@ -65,7 +65,7 @@ trait ExpenseForm {
 
 }
 
-class AddExpenseForm(currentExpenseTable:ExpenseTable, expenseView:AddExpenseView) extends ExpenseForm with Button.ClickListener {
+class AddExpenseForm(val expenseView:AddExpenseView) extends ExpenseForm with Button.ClickListener {
 
   val addBtn = new Button("Add")
   addBtn setClickShortcut KeyCode.ENTER
@@ -92,7 +92,7 @@ class AddExpenseForm(currentExpenseTable:ExpenseTable, expenseView:AddExpenseVie
 
 }
 
-class EditExpenseForm(val currentExpenseTable:ExpenseTable, val item:Item, val window:Window) extends ExpenseForm with Button.ClickListener {
+class EditExpenseForm(val expenseView:AddExpenseView, val item:Item, val window:Window) extends ExpenseForm with Button.ClickListener {
 
   val editBtn = new Button("Edit")
   editBtn setClickShortcut KeyCode.ENTER
@@ -117,7 +117,7 @@ class EditExpenseForm(val currentExpenseTable:ExpenseTable, val item:Item, val w
       dateInput.getValue.asInstanceOf[Date],
       categoryCombo.getValue.toString))
 
-    currentExpenseTable getAllItems()
+    expenseView decideTheView()
     (window.getParent).removeWindow(window)
   }
 
