@@ -130,6 +130,7 @@ class CategoryTable(tree:Tree) extends Table {
         getWindow.removeWindow(window)
       }
     })
+    categoryTxt focus()
     vertical
   }
 

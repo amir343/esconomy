@@ -54,6 +54,7 @@ case class CategoryView(dashboard:Main) extends Button.ClickListener {
     hori.setMargin(true)
     hori.setSpacing(true)
     List(label, categories, addBtn).foreach { hori.addComponent(_) }
+    categories focus()
     hori
   }
 

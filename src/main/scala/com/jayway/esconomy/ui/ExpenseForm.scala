@@ -57,6 +57,7 @@ trait ExpenseForm {
 
     val components = List(nameLbl, nameTxt, priceLbl, priceTxt, dateLbl, dateInput, categoryLbl, categoryCombo, btn)
     components foreach { gridLayout.addComponent(_) }
+    nameTxt focus()
     gridLayout
   }
 
