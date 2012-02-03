@@ -27,8 +27,10 @@ import com.vaadin.data.Property.{ValueChangeListener, ValueChangeEvent}
 case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
 
   val addExpensePanel = new Panel("Add an expense")
+  addExpensePanel setImmediate true
   val currentExpenseTable = new ExpenseTable(this, dashboard.tree)
   val currentExpensesPanel = new Panel("Current expenses")
+  currentExpensesPanel setImmediate true
 
   val months = List("January", "Feburary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
   val label = new Label("Period")
@@ -42,6 +44,7 @@ case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
     constructCurrentExpensesPanel
     addExpensePanel setWidth "50%"
     currentExpensesPanel setWidth "100%"
+    verticalLayout setImmediate true
     verticalLayout addComponent addExpensePanel
     verticalLayout addComponent currentExpensesPanel
     verticalLayout setSpacing true

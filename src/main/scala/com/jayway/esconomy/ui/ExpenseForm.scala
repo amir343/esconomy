@@ -53,11 +53,13 @@ trait ExpenseForm {
     gridLayout setSpacing true
     gridLayout setHeight "100%"
     gridLayout setWidth "100%"
+    gridLayout setImmediate true
 
     dateInput.setResolution(DateField.RESOLUTION_DAY)
     dateInput.setValue(new Date())
 
     val components = List(nameLbl, nameTxt, priceLbl, priceTxt, dateLbl, dateInput, categoryLbl, categoryCombo, btn)
+    components foreach { com:AbstractComponent => com.setImmediate(true) }
     components foreach { gridLayout.addComponent(_) }
     nameTxt focus()
     gridLayout

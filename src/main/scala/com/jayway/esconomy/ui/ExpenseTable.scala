@@ -10,6 +10,7 @@ import java.util.Date
 import collection.JavaConversions._
 import com.vaadin.ui.{Tree, Panel, Window, Table}
 import com.vaadin.ui.Window.Notification
+import com.jayway.esconomy.service.ComputeService
 
 
 /**
@@ -33,6 +34,7 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
 
   val editAction = new Action("Edit")
   val removeAction = new Action("Remove")
+  val self = this
 
   val queries = new Queries
   
@@ -65,47 +67,49 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
   }}
 
   def getAllItems() = {
-    this removeAllItems()
-    dataSource removeAllItems()
-    var totalSum = 0.0
+    ComputeService.run {
+      self removeAllItems()
+      dataSource removeAllItems()
+      var totalSum = 0.0
 
-    queries.getAllItems match {
-      case Left(x) => tree.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
-      case Right(x) => {
-        x.foreach { i =>
-          addToContainer(i, dataSource)
-          totalSum += i.price
+      queries.getAllItems match {
+        case Left(x) => tree.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
+        case Right(x) => {
+          x.foreach { i =>
+            addToContainer(i, dataSource)
+            totalSum += i.price
+          }
         }
       }
+
+      self setColumnFooter ("Item name", "Total expenses")
+      self setColumnFooter ("Price", totalSum + " SEK")
+      self setContainerDataSource dataSource
+      self setVisibleColumns Array[AnyRef]("Item name", "Category", "Date", "Price")
     }
-
-    this setColumnFooter ("Item name", "Total expenses")
-    this setColumnFooter ("Price", totalSum + " SEK")
-    this setContainerDataSource dataSource
-
-    this setVisibleColumns Array[AnyRef]("Item name", "Category", "Date", "Price")
   }
   
   def getAllItemsIn(year:String, month:String) = {
-    this removeAllItems()
-    dataSource removeAllItems()
-    var totalSum = 0.0
+    ComputeService.run {
+      self removeAllItems()
+      dataSource removeAllItems()
+      var totalSum = 0.0
 
-    queries.getAllItemsIn(year.toInt, month.toInt) match {
-      case Left(x) =>  tree.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
-      case Right(x) => {
-        x.foreach { i =>
-          addToContainer(i, dataSource)
-          totalSum += i.price
+      queries.getAllItemsIn(year.toInt, month.toInt) match {
+        case Left(x) =>  tree.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
+        case Right(x) => {
+          x.foreach { i =>
+            addToContainer(i, dataSource)
+            totalSum += i.price
+          }
         }
       }
+
+      self setColumnFooter ("Item name", "Total expenses")
+      self setColumnFooter ("Price", totalSum + " SEK")
+      self setContainerDataSource dataSource
+      self setVisibleColumns Array[AnyRef]("Item name", "Category", "Date", "Price")
     }
-
-    this setColumnFooter ("Item name", "Total expenses")
-    this setColumnFooter ("Price", totalSum + " SEK")
-    this setContainerDataSource dataSource
-
-    this setVisibleColumns Array[AnyRef]("Item name", "Category", "Date", "Price")
   }
   
   def addToContainer(record:Item, dataSource:IndexedContainer) = {
