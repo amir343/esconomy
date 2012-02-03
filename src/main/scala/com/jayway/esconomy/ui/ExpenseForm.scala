@@ -80,18 +80,23 @@ class AddExpenseForm(val expenseView:AddExpenseView) extends ExpenseForm with Bu
   }
 
   def buttonClick(event:Button#ClickEvent) = {
-    val commands = new Commands()
-    commands.saveItem(Item(
-      itemName = nameTxt.getValue.asInstanceOf[String],
-      price = priceTxt.getValue,
-      date = dateInput.getValue.asInstanceOf[Date],
-      category = categoryCombo.getValue.toString))
+    if (nameTxt.getValue != null && priceTxt.getValue != null && dateInput.getValue != null && categoryCombo.getValue != null) {
+      val commands = new Commands()
+      commands.saveItem(Item(
+        itemName = nameTxt.getValue.asInstanceOf[String],
+        price = priceTxt.getValue,
+        date = dateInput.getValue.asInstanceOf[Date],
+        category = categoryCombo.getValue.toString))
 
-    addBtn.getWindow.showNotification("Notification", "Item '" + nameTxt.getValue + "' is added", Notification.TYPE_TRAY_NOTIFICATION)
-    expenseView decideTheView()
-    nameTxt.setValue("")
-    categoryCombo.setValue("")
-    priceTxt.setValue("")
+      addBtn.getWindow.showNotification("Notification", "Item '" + nameTxt.getValue + "' is added", Notification.TYPE_TRAY_NOTIFICATION)
+      expenseView decideTheView()
+      nameTxt.setValue("")
+      categoryCombo.setValue("")
+      priceTxt.setValue("")
+    } else {
+      addBtn.getWindow.showNotification("You haven't entered all the fields yet", Notification.TYPE_HUMANIZED_MESSAGE)
+    }
+
   }
 
 }
