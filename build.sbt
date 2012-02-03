@@ -11,7 +11,7 @@ scalaVersion := "2.9.1"
 seq((webSettings ++ vaadinSettings ++ Seq(
   port := 8081,
   vaadinWidgetSet := "widgetset",
-  vaadinVersion := "6.7.3"
+  vaadinVersion := "6.7.4"
 )) :_*)
 
 resolvers += "Spring Maven MILESTONE Repository" at "http://maven.springframework.org/milestone"
@@ -19,7 +19,7 @@ resolvers += "Spring Maven MILESTONE Repository" at "http://maven.springframewor
 resolvers += "Vaadin Addons" at "http://maven.vaadin.com/vaadin-addons"
 
 libraryDependencies ++= Seq(
-  "com.vaadin" % "vaadin" % "6.7.3",
+  "com.vaadin" % "vaadin" % "6.7.4",
   "org.vaadin.addons" % "autoreplacefield" % "1.0.1",
   "javax.servlet" % "servlet-api" % "2.4",
   "org.eclipse.jetty" % "jetty-server" % "8.0.1.v20110908",

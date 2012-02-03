@@ -45,14 +45,14 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
   this setImmediate true
 
   val dataSource:IndexedContainer = new IndexedContainer()
-  
+
   List( ("Id", classOf[String]),
         ("Item name", classOf[String]),
         ("Category", classOf[String]),
         ("Date", classOf[Date]),
         ("Price", classOf[String]) )
     .foreach { x => dataSource.addContainerProperty(x._1, x._2, "")  }
-  
+
   getAllItems()
 
   this addActionHandler { new Handler {
@@ -67,7 +67,6 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
   }}
 
   def getAllItems() = {
-    ComputeService.run {
       self removeAllItems()
       dataSource removeAllItems()
       var totalSum = 0.0
@@ -86,11 +85,9 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
       self setColumnFooter ("Price", totalSum + " SEK")
       self setContainerDataSource dataSource
       self setVisibleColumns Array[AnyRef]("Item name", "Category", "Date", "Price")
-    }
   }
   
   def getAllItemsIn(year:String, month:String) = {
-    ComputeService.run {
       self removeAllItems()
       dataSource removeAllItems()
       var totalSum = 0.0
@@ -109,7 +106,6 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
       self setColumnFooter ("Price", totalSum + " SEK")
       self setContainerDataSource dataSource
       self setVisibleColumns Array[AnyRef]("Item name", "Category", "Date", "Price")
-    }
   }
   
   def addToContainer(record:Item, dataSource:IndexedContainer) = {

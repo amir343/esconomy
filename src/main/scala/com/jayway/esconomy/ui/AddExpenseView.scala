@@ -5,6 +5,7 @@ import com.vaadin.data.Property
 import com.vaadin.ui.AbstractSelect.Filtering
 import com.vaadin.ui._
 import com.vaadin.data.Property.{ValueChangeListener, ValueChangeEvent}
+import wrapped.{ComboBoxW, PanelW, HorizontalLayoutW, VerticalLayoutW}
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -26,29 +27,22 @@ import com.vaadin.data.Property.{ValueChangeListener, ValueChangeEvent}
 
 case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
 
-  val addExpensePanel = new Panel("Add an expense")
-  addExpensePanel setImmediate true
+  val addExpensePanel = new PanelW(caption = "Add an expense", width = "50%", height = "60%")
   val currentExpenseTable = new ExpenseTable(this, dashboard.tree)
-  val currentExpensesPanel = new Panel("Current expenses")
-  currentExpensesPanel setImmediate true
+  val currentExpensesPanel = new PanelW(caption = "Current expenses")
 
   val months = List("January", "Feburary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
   val label = new Label("Period")
-  val yearCombo = new ComboBox()
-  val monthCombo = new ComboBox()
+  val yearCombo = new ComboBoxW()
+  val monthCombo = new ComboBoxW()
   val showAllChkBox = new CheckBox("Show all items", false)
 
   def getComponents = {
-    val verticalLayout = new VerticalLayout
+    val verticalLayout = new VerticalLayoutW
     constructAddExpensePanel
     constructCurrentExpensesPanel
-    addExpensePanel setWidth "50%"
-    currentExpensesPanel setWidth "100%"
-    verticalLayout setImmediate true
     verticalLayout addComponent addExpensePanel
     verticalLayout addComponent currentExpensesPanel
-    verticalLayout setSpacing true
-    verticalLayout setMargin true
     verticalLayout
   }
   
@@ -64,23 +58,15 @@ case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
   
   def periodConfiguration = {
     val cal = Calendar.getInstance()
-    val hori = new HorizontalLayout
-    hori setSpacing true
-    hori setMargin true
+    val hori = new HorizontalLayoutW
 
     (1900 to cal.get(Calendar.YEAR)).map { _.toString }.reverse.foreach(yearCombo.addItem(_))
     yearCombo.setValue(cal.get(Calendar.YEAR).toString)
     yearCombo addListener this
-    yearCombo setFilteringMode Filtering.FILTERINGMODE_STARTSWITH
-    yearCombo setImmediate true
-    yearCombo setNullSelectionAllowed false
 
     monthCombo addListener this
     months.foreach(monthCombo.addItem _)
     monthCombo.setValue(months.apply(cal.get(Calendar.MONTH)))
-    monthCombo setFilteringMode Filtering.FILTERINGMODE_STARTSWITH
-    monthCombo setImmediate true
-    monthCombo setNullSelectionAllowed false
 
     showAllChkBox.setImmediate(true)
     showAllChkBox.addListener(new ValueChangeListener {
@@ -92,11 +78,7 @@ case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
       }
     })
 
-    hori.addComponent(label)
-    hori.addComponent(yearCombo)
-    hori.addComponent(monthCombo)
-    hori.addComponent(showAllChkBox)
-
+    List(label, yearCombo, monthCombo, showAllChkBox).foreach { hori.addComponent(_) }
     hori
   }
 
