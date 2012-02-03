@@ -64,18 +64,16 @@ class CategoryTable(tree:Tree) extends Table {
   }}
 
   def getAllItems() = {
-    ComputeService.run {
-      this removeAllItems()
-      dataSource removeAllItems()
+    this removeAllItems()
+    dataSource removeAllItems()
 
-      queries.getAllCategories match {
-        case Left(x) => tree.getWindow.showNotification("Error", x.toString, Notification.TYPE_ERROR_MESSAGE)
-        case Right(x) => { x.foreach { i => addToContainer(i, dataSource)} }
-      }
-
-      this setContainerDataSource dataSource
-      this setVisibleColumns Array[AnyRef]("Category")
+    queries.getAllCategories match {
+      case Left(x) => tree.getWindow.showNotification("Error", x.toString, Notification.TYPE_ERROR_MESSAGE)
+      case Right(x) => { x.foreach { i => addToContainer(i, dataSource)} }
     }
+
+    this setContainerDataSource dataSource
+    this setVisibleColumns Array[AnyRef]("Category")
   }
 
   def removeTableItem(target:AnyRef) {

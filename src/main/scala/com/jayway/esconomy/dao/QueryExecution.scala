@@ -23,28 +23,27 @@ import com.jayway.esconomy.domain.{Category, Item}
  *
  * @author Amir Moulavi
  */
-class Queries {
 
-  val exec = new QueryExecution
+class QueryExecution {
 
-  def getAllItems = {
-    try { Right(exec.findAll()) }
-    catch { case e => Left(e.getMessage) }
+  def findAll() = {
+    mongoOperations.findAll(classOf[Item], itemCollection)
   }
-  
+
   def getAllItemsIn(year:Int, month:Int) = {
-    try { Right(exec.getAllItemsIn(year, month)) }
-    catch { case e => Left(e.getMessage)}
+    val cal = Calendar.getInstance()
+    mongoOperations.findAll(classOf[Item], itemCollection).filter { x =>
+      cal.setTime(x.date)
+      if (cal.get(Calendar.YEAR) == year && cal.get(Calendar.MONTH) == month) true else false
+    }
   }
 
   def getAllCategories = {
-    try { Right(exec.getAllCategories) }
-    catch { case e => Left(e.getMessage)}
+    mongoOperations.findAll(classOf[Category], categoryCollection)
   }
-  
+
   def getItemsGroupedByCategoriesIn(year:Int, month:Int) = {
-    try { Right(exec.getItemsGroupedByCategoriesIn(year, month)) }
-    catch { case e => Left(e.getMessage)}
+
   }
-  
+
 }
