@@ -83,7 +83,7 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
   def updateChart(list:List[(String, Double)]) = {
     val totalExpense = list.foldLeft(0.0)( (r,c) => r + c._2)
     val barChart = getBarChart(list)
-    val chart = getPieChart (list.map { x => (x._1, df.format(100 * x._2/totalExpense).toDouble)})
+    val chart = getPieChart (list.map { x => (x._1, if (x._2 != 0.0) df.format(100 * x._2/totalExpense).toDouble else x._2)})
     chartLayout.removeAllComponents()
     chartLayout.addComponent(chart)
     chartLayout.addComponent(barChart)
@@ -153,8 +153,8 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
     chartConfig.setLegend(new Legend(false));
 
     chartConfig.getTooltip.setFormatterJsFunc("function() {"
-        + " return '<b>'+ this.x +'</b><br/>'+ 'Population in 2008: '+ $wnd.Highcharts.numberFormat(this.y, 1) + "
-        + " ' millions' " + "}")
+            + " return '<b>'+ this.point.name +'</b>: '+ this.y +' %'; "
+            + "}")
 
     val chart = new InvientCharts(chartConfig)
 
