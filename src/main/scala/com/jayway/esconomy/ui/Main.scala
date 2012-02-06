@@ -92,6 +92,7 @@ class Main extends Application {
     items.filter( ! _.hasChildren ).foreach { tree.setChildrenAllowed(_, false) }
 
     tree.setParent(AddExpense(), MyEconomy())
+    tree.setParent(Reports(), MyEconomy())
     tree.setParent(AddCategory(), Settings())
 
     tree.addListener(MenuItemValueChangeListener(this))
@@ -110,6 +111,11 @@ class Main extends Application {
   def switchToAddCategoryView() {
     centerLayout.removeAllComponents()
     centerLayout.addComponent(CategoryView(this).getComponents)
+  }
+
+  def switchToReportView() {
+    centerLayout.removeAllComponents()
+    centerLayout.addComponent(ReportView(this).getComponents)
   }
 
 

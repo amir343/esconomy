@@ -4,6 +4,7 @@ import com.jayway.esconomy.db.MongoOps._
 import collection.JavaConversions._
 import java.util.Calendar
 import com.jayway.esconomy.domain.{Category, Item}
+import org.springframework.data.mongodb.core.query.{Criteria, Query}
 
 
 /**
@@ -42,8 +43,27 @@ class QueryExecution {
     mongoOperations.findAll(classOf[Category], categoryCollection)
   }
 
-  def getItemsGroupedByCategoriesIn(year:Int, month:Int) = {
-
+  def getItemsInCategory(category:String) = {
+    mongoOperations.find(new Query(Criteria.where("category").is(category)),classOf[Item], itemCollection)
   }
+
+  def getItemsGroupedByCategoriesIn(year:Int, month:Int) = {
+    val cal = Calendar.getInstance()
+
+    getAllCategories.foldLeft(List[(Category, List[Item])]()) { (r, coll) =>
+      val it:List[Item] = getItemsInCategory(coll.category).filter { item =>
+        cal.setTime(item.date)
+        if (cal.get(Calendar.YEAR) == year && cal.get(Calendar.MONTH) == month) true else false
+      }.toList
+      r ::: List((coll, it))
+    }.map { tuples =>
+      (tuples._1.category, sum(tuples._2))
+    }
+  }
+  
+  private def sum(items:List[Item]):Double = {
+    items.foldLeft(0.0) { (r,c) => r + c.price }
+  }
+
 
 }

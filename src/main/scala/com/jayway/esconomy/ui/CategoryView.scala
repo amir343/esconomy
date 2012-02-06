@@ -5,6 +5,7 @@ import com.jayway.esconomy.dao.Commands
 import com.jayway.esconomy.domain.Category
 import com.vaadin.ui.Window.Notification
 import com.vaadin.event.ShortcutAction.KeyCode
+import wrapped.{VerticalLayoutW, HorizontalLayoutW}
 
 
 /**
@@ -34,25 +35,18 @@ case class CategoryView(dashboard:Main) extends Button.ClickListener {
   addBtn setClickShortcut KeyCode.ENTER
   val categoryTable = new CategoryTable(dashboard.tree)
 
-  def getComponents() = {
+  def getComponents = {
     val panel = new Panel("Categories")
-    val verticalLayout = new VerticalLayout
+    val verticalLayout = new VerticalLayoutW
     verticalLayout setWidth "100%"
-    verticalLayout setImmediate true
-    verticalLayout setSpacing true
-    verticalLayout setMargin true
-    panel setImmediate true
-    verticalLayout.addComponent(getAddCategoryLayout())
+    verticalLayout.addComponent(getAddCategoryLayout)
     verticalLayout.addComponent(categoryTable)
     panel.addComponent(verticalLayout)
     panel
   }
   
-  def getAddCategoryLayout() = {
-    val hori = new HorizontalLayout
-    hori.setImmediate(true)
-    hori.setMargin(true)
-    hori.setSpacing(true)
+  def getAddCategoryLayout = {
+    val hori = new HorizontalLayoutW {}
     List(label, categories, addBtn).foreach { hori.addComponent(_) }
     categories focus()
     hori

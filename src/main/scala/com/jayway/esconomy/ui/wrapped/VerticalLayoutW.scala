@@ -57,9 +57,11 @@ class PanelW(caption:String = "",
   if (height!= null) setHeight(height)
 }
 
-class ComboBoxW(immediate:Boolean = true,
+class ComboBoxW(caption:String = null,
+                immediate:Boolean = true,
                 filteringMode:Int = Filtering.FILTERINGMODE_STARTSWITH,
                 nullSelectionAllowed:Boolean = false) extends ComboBox {
+  if (caption != null) setCaption(caption)
   setFilteringMode(filteringMode)
   setImmediate(immediate)
   setNullSelectionAllowed(nullSelectionAllowed)

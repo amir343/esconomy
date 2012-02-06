@@ -70,7 +70,7 @@ class CategoryTable(tree:Tree) extends Table {
     queries.getAllCategories match {
       case Left(x) => tree.getWindow.showNotification("Error", x.toString, Notification.TYPE_ERROR_MESSAGE)
       case Right(x) => { x.foreach { i => addToContainer(i, dataSource)} }
-    }
+      }
 
     this setContainerDataSource dataSource
     this setVisibleColumns Array[AnyRef]("Category")

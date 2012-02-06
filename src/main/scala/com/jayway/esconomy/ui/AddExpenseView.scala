@@ -6,6 +6,7 @@ import com.vaadin.ui.AbstractSelect.Filtering
 import com.vaadin.ui._
 import com.vaadin.data.Property.{ValueChangeListener, ValueChangeEvent}
 import wrapped.{ComboBoxW, PanelW, HorizontalLayoutW, VerticalLayoutW}
+import com.jayway.esconomy.util.Utils._
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -31,10 +32,9 @@ case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
   val currentExpenseTable = new ExpenseTable(this, dashboard.tree)
   val currentExpensesPanel = new PanelW(caption = "Current expenses")
 
-  val months = List("January", "Feburary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
   val label = new Label("Period")
-  val yearCombo = new ComboBoxW()
-  val monthCombo = new ComboBoxW()
+  val yearCombo = new ComboBoxW(caption = "Year")
+  val monthCombo = new ComboBoxW(caption = "Month")
   val showAllChkBox = new CheckBox("Show all items", false)
 
   def getComponents = {
@@ -60,7 +60,7 @@ case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
     val cal = Calendar.getInstance()
     val hori = new HorizontalLayoutW
 
-    (1900 to cal.get(Calendar.YEAR)).map { _.toString }.reverse.foreach(yearCombo.addItem(_))
+    getYears.foreach(yearCombo.addItem(_))
     yearCombo.setValue(cal.get(Calendar.YEAR).toString)
     yearCombo addListener this
 

@@ -37,7 +37,6 @@ case class AddExpense() extends TreeItem {
 
 case class Reports() extends TreeItem {
   override val title = "Reports"
-  override def hasChildren = true
 }
 
 case class Settings() extends TreeItem {
@@ -54,6 +53,7 @@ case class MenuItemValueChangeListener(dashboard:Main) extends Property.ValueCha
     event.getProperty.getValue.asInstanceOf[TreeItem] match {
       case AddExpense()  => dashboard switchToAddExpenseView
       case AddCategory() => dashboard switchToAddCategoryView
+      case Reports() => dashboard switchToReportView
       case _ => println("No such item found")
     }
   }
