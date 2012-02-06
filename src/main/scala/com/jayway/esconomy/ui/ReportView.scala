@@ -1,5 +1,6 @@
 package com.jayway.esconomy.ui
 
+import collection.JavaConversions._
 import com.jayway.esconomy.util.Utils._
 import com.vaadin.data.Property
 import com.vaadin.data.Property.ValueChangeEvent
@@ -9,8 +10,11 @@ import com.jayway.esconomy.dao.Queries
 import java.util.{LinkedHashSet, Calendar}
 import com.invient.vaadin.charts.{InvientCharts, InvientChartsConfig}
 import com.invient.vaadin.charts.InvientCharts.{DecimalPoint, XYSeries, SeriesType}
-import com.invient.vaadin.charts.InvientChartsConfig.{PointConfig, PieDataLabel, PieConfig}
 import java.text.DecimalFormat
+import com.invient.vaadin.charts.InvientChartsConfig.GeneralChartConfig.Margin
+import com.invient.vaadin.charts.InvientChartsConfig._
+import com.invient.vaadin.charts.InvientChartsConfig.AxisBase.AxisTitle
+import com.invient.vaadin.charts.Color.RGB
 
 
 /**
@@ -78,12 +82,14 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
   
   def updateChart(list:List[(String, Double)]) = {
     val totalExpense = list.foldLeft(0.0)( (r,c) => r + c._2)
-    val chart = getChart (list.map { x => (x._1, df.format(100 * x._2/totalExpense).toDouble)})
+    val barChart = getBarChart(list)
+    val chart = getPieChart (list.map { x => (x._1, df.format(100 * x._2/totalExpense).toDouble)})
     chartLayout.removeAllComponents()
     chartLayout.addComponent(chart)
+    chartLayout.addComponent(barChart)
   }
 
-  def getChart(list:List[(String, Double)]) = {
+  def getPieChart(list:List[(String, Double)]) = {
     val chartConfig = new InvientChartsConfig()
     chartConfig.getGeneralChartConfig.setType(SeriesType.PIE)
 
@@ -113,6 +119,61 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
     chart.setWidth("400px")
     chart.setImmediate(true)
     chart
+  }
+  
+  def getBarChart(list:List[(String, Double)]) = {
+    val chartConfig = new InvientChartsConfig()
+    chartConfig.getGeneralChartConfig.setType(SeriesType.COLUMN)
+    chartConfig.getGeneralChartConfig.setMargin(new Margin())
+    chartConfig.getGeneralChartConfig.getMargin.setTop(50)
+    chartConfig.getGeneralChartConfig.getMargin.setRight(50)
+    chartConfig.getGeneralChartConfig.getMargin.setBottom(100)
+    chartConfig.getGeneralChartConfig.getMargin.setLeft(80)
+
+    chartConfig.getTitle.setText("Expenses in " + monthCombo.getValue + ", " + yearCombo.getValue)
+
+    val categories = list.map { _._1 }
+    val xAxis = new CategoryAxis()
+    xAxis.setCategories(categories)
+    xAxis.setLabel(new XAxisDataLabel())
+    xAxis.getLabel.setRotation(-45)
+    xAxis.getLabel.setAlign(HorzAlign.RIGHT)
+    xAxis.getLabel.setStyle("{ font: 'normal 13px Verdana, sans-serif' }")
+    val xAxesSet = new LinkedHashSet[InvientChartsConfig.XAxis]()
+    xAxesSet.add(xAxis)
+    chartConfig.setXAxes(xAxesSet)
+
+    val yAxis = new NumberYAxis()
+    yAxis.setMin(0.0)
+    yAxis.setTitle(new AxisTitle("Expense (SEK)"))
+    val yAxesSet = new LinkedHashSet[InvientChartsConfig.YAxis]()
+    yAxesSet.add(yAxis);
+    chartConfig.setYAxes(yAxesSet);
+
+    chartConfig.setLegend(new Legend(false));
+
+    chartConfig.getTooltip.setFormatterJsFunc("function() {"
+        + " return '<b>'+ this.x +'</b><br/>'+ 'Population in 2008: '+ $wnd.Highcharts.numberFormat(this.y, 1) + "
+        + " ' millions' " + "}")
+
+    val chart = new InvientCharts(chartConfig)
+
+    val colCfg = new ColumnConfig()
+    colCfg.setDataLabel(new DataLabel())
+    colCfg.getDataLabel.setRotation(-90)
+    colCfg.getDataLabel.setAlign(HorzAlign.RIGHT)
+    colCfg.getDataLabel.setX(-3)
+    colCfg.getDataLabel.setY(10)
+    colCfg.getDataLabel.setColor(new RGB(255, 255, 255))
+    colCfg.getDataLabel.setFormatterJsFunc("function() {" + " return this.y; " + "}")
+    colCfg.getDataLabel.setStyle(" { font: 'normal 13px Verdana, sans-serif' } ")
+    val seriesData = new XYSeries("", colCfg)
+    val expenses = new LinkedHashSet[InvientCharts.DecimalPoint]()
+    list.foreach { t => expenses.add(new DecimalPoint(seriesData, t._2))}
+    seriesData.setSeriesPoints(expenses);
+
+    chart.addSeries(seriesData);
+    chart    
   }
 
 
