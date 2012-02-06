@@ -21,6 +21,7 @@ resolvers += "Vaadin Addons" at "http://maven.vaadin.com/vaadin-addons"
 libraryDependencies ++= Seq(
   "com.vaadin" % "vaadin" % "6.7.4",
   "org.vaadin.addons" % "autoreplacefield" % "1.0.1",
+  "org.vaadin.addons" % "invient-charts" % "0.8.6",
   "javax.servlet" % "servlet-api" % "2.4",
   "org.eclipse.jetty" % "jetty-server" % "8.0.1.v20110908",
   "org.mongodb" % "mongo-java-driver" % "2.6",

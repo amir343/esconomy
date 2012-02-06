@@ -8,9 +8,10 @@
         <param-name>productionMode</param-name>
         <param-value>false</param-value>
     </context-param>
+
     <servlet>
         <servlet-name>Scala Vaadin Application</servlet-name>
-        <servlet-class>com.vaadin.terminal.gwt.server.ApplicationServlet</servlet-class>
+        <servlet-class>com.jayway.esconomy.service.EsconomyAppServlet</servlet-class>
         <init-param>
             <description>Vaadin application class to start</description>
             <param-name>application</param-name>
@@ -20,9 +21,16 @@
             <param-name>widgetset</param-name>
             <param-value>widgetset</param-value>
         </init-param>
+        <load-on-startup>1</load-on-startup>
     </servlet>
+
     <servlet-mapping>
         <servlet-name>Scala Vaadin Application</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
+
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+
 </web-app>

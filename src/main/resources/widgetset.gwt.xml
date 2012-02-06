@@ -1,4 +1,5 @@
 <module>
     <inherits name="com.vaadin.terminal.gwt.DefaultWidgetSet" />
     <inherits name="org.vaadin.autoreplacefield.AutoreplacefieldWidgetset" />
+    <inherits name="com.invient.vaadin.charts.widgetset.InvientChartsWidgetset" />
 </module>
