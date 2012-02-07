@@ -3,6 +3,7 @@ package com.jayway.esconomy.ui
 import com.vaadin.Application
 import com.vaadin.terminal.Sizeable
 import com.vaadin.ui._
+import wrapped.VerticalLayoutW
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -24,8 +25,8 @@ import com.vaadin.ui._
 
 class Main extends Application {
 
-  val items = List(MyEconomy(), AddExpense(), Reports(), Settings(), AddCategory())
-  val centerLayout = new VerticalLayout
+  val items = List(MyEconomy(), AddExpense(), Reports(), AddCategory())
+  val centerLayout = new VerticalLayoutW( width = "100%", height = "100%")
   val tree = new Tree
 
   def init() {
@@ -48,9 +49,7 @@ class Main extends Application {
   }
 
   def getTopLayout = {
-    val topLayout = new VerticalLayout
-    topLayout setSpacing true
-    topLayout setMargin true
+    val topLayout = new VerticalLayoutW
 
     val title = new Label("<h1>Welcome to Esconomy!</h1>")
     title setContentMode Label.CONTENT_XHTML
@@ -72,18 +71,11 @@ class Main extends Application {
   }
 
   def getCenterLayout = {
-    centerLayout setHeight "100%"
-    centerLayout setWidth "100%"
-    centerLayout setImmediate true
-    centerLayout setSpacing true
-    centerLayout setMargin true
     centerLayout
   }
   
   def getNavigationMenu = {
-    val nav = new VerticalLayout
-    nav setSpacing true
-    nav setMargin true
+    val nav = new VerticalLayoutW()
 
     tree setImmediate true
 
@@ -92,8 +84,8 @@ class Main extends Application {
     items.filter( ! _.hasChildren ).foreach { tree.setChildrenAllowed(_, false) }
 
     tree.setParent(AddExpense(), MyEconomy())
+    tree.setParent(AddCategory(), MyEconomy())
     tree.setParent(Reports(), MyEconomy())
-    tree.setParent(AddCategory(), Settings())
 
     tree.addListener(MenuItemValueChangeListener(this))
 

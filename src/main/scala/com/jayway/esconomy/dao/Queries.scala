@@ -46,5 +46,10 @@ class Queries {
     try { Right(exec.getItemsGroupedByCategoriesIn(year, month)) }
     catch { case e => Left(e.getMessage)}
   }
-  
+
+  def getYearlyItemsGroupedByCategoriesIn(year:Int) = {
+    try { Right(exec.getYearlyItemsGroupedByCategoriesIn(year)) }
+    catch { case e => Left(e.getMessage)}
+  }
+
 }

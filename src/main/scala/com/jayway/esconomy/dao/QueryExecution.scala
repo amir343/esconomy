@@ -60,7 +60,21 @@ class QueryExecution {
       (tuples._1.category, sum(tuples._2))
     }
   }
-  
+
+  def getYearlyItemsGroupedByCategoriesIn(year:Int) = {
+    val cal = Calendar.getInstance()
+
+    getAllCategories.foldLeft(List[(Category, List[Item])]()) { (r, coll) =>
+      val it:List[Item] = getItemsInCategory(coll.category).filter { item =>
+        cal.setTime(item.date)
+        if (cal.get(Calendar.YEAR) == year) true else false
+      }.toList
+      r ::: List((coll, it))
+    }.map { tuples =>
+      (tuples._1.category, sum(tuples._2))
+    }
+  }
+
   private def sum(items:List[Item]):Double = {
     items.foldLeft(0.0) { (r,c) => r + c.price }
   }

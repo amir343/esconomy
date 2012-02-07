@@ -3,7 +3,6 @@ package com.jayway.esconomy.ui
 import collection.JavaConversions._
 import com.jayway.esconomy.util.Utils._
 import com.vaadin.data.Property
-import com.vaadin.data.Property.ValueChangeEvent
 import wrapped.{PanelW, ComboBoxW, HorizontalLayoutW, VerticalLayoutW}
 import com.vaadin.ui.CheckBox
 import com.jayway.esconomy.dao.Queries
@@ -15,6 +14,7 @@ import com.invient.vaadin.charts.InvientChartsConfig.GeneralChartConfig.Margin
 import com.invient.vaadin.charts.InvientChartsConfig._
 import com.invient.vaadin.charts.InvientChartsConfig.AxisBase.AxisTitle
 import com.invient.vaadin.charts.Color.RGB
+import com.vaadin.data.Property.{ValueChangeListener, ValueChangeEvent}
 
 
 /**
@@ -36,6 +36,9 @@ import com.invient.vaadin.charts.Color.RGB
  */
 
 case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
+
+  val queries = new Queries
+
   val df = new DecimalFormat("##.##");
   val mainPanel = new PanelW(caption = "Reports", width = "100%")
   val mainLayout = new VerticalLayoutW()
@@ -45,7 +48,6 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
   val monthCombo = new ComboBoxW(caption = "Month")
   val showYearlyChkBox = new CheckBox("Show yearly", false)
   
-
   def getComponents = {
     constructPeriodLayout()
     mainLayout.setSizeFull()
@@ -64,22 +66,51 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
     months.foreach(monthCombo.addItem _)
     monthCombo.setValue(months.apply(cal.get(Calendar.MONTH)))
 
+    showYearlyChkBox.setImmediate(true)
+    showYearlyChkBox.addListener(new ValueChangeListener {
+      def valueChange(event: ValueChangeEvent) {
+        showYearlyChkBox.getValue.asInstanceOf[Boolean] match {
+          case false => {
+            monthCombo.setEnabled(true)
+            getItemsGroupedByCategories()
+          }
+          case true  => {
+            monthCombo.setEnabled(false)
+            getYearlyItemsGroupedByCategories()
+          }
+        }
+      }
+    })
+    
     List(yearCombo, monthCombo, showYearlyChkBox).foreach { periodLayout addComponent _ }
 
   }
 
   def valueChange(event:ValueChangeEvent) {
     if ( yearCombo.getValue != null && monthCombo.getValue != null ) {
-      val queries = new Queries
-      queries.getItemsGroupedByCategoriesIn(yearCombo.getValue.toString.toInt, months.indexOf(monthCombo.getValue.toString).toString.toInt) match {
-        case Left(x) =>
-        case Right(x) => updateChart(x) 
+      showYearlyChkBox.getValue.asInstanceOf[Boolean] match {
+        case true => getYearlyItemsGroupedByCategories()
+        case false => getItemsGroupedByCategories()
       }
     } else {
       println("One of the combo was null!")
     }
   }
-  
+
+  def getYearlyItemsGroupedByCategories() {
+    queries.getYearlyItemsGroupedByCategoriesIn(yearCombo.getValue.toString.toInt) match {
+      case Left(x) =>
+      case Right(x) => updateChart(x)
+    }
+  }
+
+  def getItemsGroupedByCategories() {
+    queries.getItemsGroupedByCategoriesIn(yearCombo.getValue.toString.toInt, months.indexOf(monthCombo.getValue.toString).toString.toInt) match {
+      case Left(x) =>
+      case Right(x) => updateChart(x)
+    }
+  }
+
   def updateChart(list:List[(String, Double)]) = {
     val totalExpense = list.foldLeft(0.0)( (r,c) => r + c._2)
     val barChart = getBarChart(list)
@@ -93,7 +124,10 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
     val chartConfig = new InvientChartsConfig()
     chartConfig.getGeneralChartConfig.setType(SeriesType.PIE)
 
-    chartConfig.getTitle.setText("Expenses in " + monthCombo.getValue + ", " + yearCombo.getValue)
+    showYearlyChkBox.getValue.asInstanceOf[Boolean] match {
+      case false => chartConfig.getTitle.setText("Expenses in " + monthCombo.getValue + ", " + yearCombo.getValue)
+      case true => chartConfig.getTitle.setText("Expenses in " + yearCombo.getValue)
+    }
 
     chartConfig.getTooltip.setFormatterJsFunc("function() {"
         + " return '<b>'+ this.point.name +'</b>: '+ this.y +' %'; "
@@ -130,7 +164,10 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
     chartConfig.getGeneralChartConfig.getMargin.setBottom(100)
     chartConfig.getGeneralChartConfig.getMargin.setLeft(80)
 
-    chartConfig.getTitle.setText("Expenses in " + monthCombo.getValue + ", " + yearCombo.getValue)
+    showYearlyChkBox.getValue.asInstanceOf[Boolean] match {
+      case false => chartConfig.getTitle.setText("Expenses in " + monthCombo.getValue + ", " + yearCombo.getValue)
+      case true => chartConfig.getTitle.setText("Expenses in " + yearCombo.getValue)
+    }
 
     val categories = list.map { _._1 }
     val xAxis = new CategoryAxis()

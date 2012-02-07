@@ -9,7 +9,6 @@ import java.util.Date
 import collection.JavaConversions._
 import com.vaadin.ui.{Tree, Panel, Window, Table}
 import com.vaadin.ui.Window.Notification
-import com.jayway.esconomy.service.ComputeService
 import wrapped.ComboBoxW
 import com.vaadin.data.{Property, Item => VaadinItem}
 import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
