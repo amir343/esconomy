@@ -48,12 +48,17 @@ case class AddCategory() extends TreeItem {
   override val title = "Add a category"
 }
 
+case class Import() extends TreeItem {
+  override val title = "Import"
+}
+
 case class MenuItemValueChangeListener(dashboard:Main) extends Property.ValueChangeListener {
   def valueChange(event:ValueChangeEvent) {
     event.getProperty.getValue.asInstanceOf[TreeItem] match {
       case AddExpense()  => dashboard switchToAddExpenseView
       case AddCategory() => dashboard switchToAddCategoryView
       case Reports() => dashboard switchToReportView
+      case Import() => dashboard switchToImportView
       case _ => println("No such item found")
     }
   }

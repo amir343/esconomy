@@ -96,3 +96,9 @@ class WindowW(caption:String = null,
   setResizable(resizable)
   setModal(modal)
 }
+
+class ProgressIndicatorW(immediate:Boolean = true,
+                         visible:Boolean = true) extends ProgressIndicator {
+  setImmediate(immediate)
+  setVisible(visible)
+}

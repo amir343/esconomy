@@ -25,7 +25,7 @@ import wrapped.VerticalLayoutW
 
 class Main extends Application {
 
-  val items = List(MyEconomy(), AddExpense(), Reports(), AddCategory())
+  val items = List(MyEconomy(), AddExpense(), Reports(), AddCategory(), Import())
   val centerLayout = new VerticalLayoutW( width = "100%", height = "100%")
   val tree = new Tree
 
@@ -97,17 +97,22 @@ class Main extends Application {
   
   def switchToAddExpenseView() {
     centerLayout.removeAllComponents()
-    centerLayout.addComponent(AddExpenseView(this).getComponents)
+    centerLayout <~ AddExpenseView(this).getComponents
   }
 
   def switchToAddCategoryView() {
     centerLayout.removeAllComponents()
-    centerLayout.addComponent(CategoryView(this).getComponents)
+    centerLayout <~ CategoryView(this).getComponents
   }
 
   def switchToReportView() {
     centerLayout.removeAllComponents()
-    centerLayout.addComponent(ReportView(this).getComponents)
+    centerLayout <~ ReportView(this).getComponents
+  }
+
+  def switchToImportView() {
+    centerLayout.removeAllComponents()
+    centerLayout <~ ImportView(this).getComponents
   }
 
 
