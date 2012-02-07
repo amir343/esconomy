@@ -25,8 +25,8 @@ object Utils {
   val cal = Calendar.getInstance()
   val months = List("January", "Feburary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
 
-  def getYears = {
-    (1900 to cal.get(Calendar.YEAR)).map { _.toString }.reverse
+  def getYears:List[String] = {
+    (1900 to cal.get(Calendar.YEAR)).map { _.toString }.reverse.toList
   }
 
 }

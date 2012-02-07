@@ -9,9 +9,9 @@ import java.util.Date
 import collection.JavaConversions._
 import com.vaadin.ui.{Tree, Panel, Window, Table}
 import com.vaadin.ui.Window.Notification
-import wrapped.ComboBoxW
 import com.vaadin.data.{Property, Item => VaadinItem}
 import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
+import wrapped.{WindowW, VerticalLayoutW, PanelW, ComboBoxW}
 
 
 /**
@@ -69,7 +69,7 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
     }
   }}
 
-  def getAllItems() = {
+  def getAllItems() {
       self removeAllItems()
       dataSource removeAllItems()
       var totalSum = 0.0
@@ -90,7 +90,7 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
       self setVisibleColumns Array[AnyRef]("Item name", "Category", "Date", "Price")
   }
   
-  def getAllItemsIn(year:String, month:String) = {
+  def getAllItemsIn(year:String, month:String) {
       self removeAllItems()
       dataSource removeAllItems()
       var totalSum = 0.0
@@ -131,18 +131,14 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
   }
 
   def editTableItem(target:AnyRef) {
-    val editWindow = new Window("Edit Item")
-    editWindow setWidth "380px"
-    editWindow setHeight "350px"
-    editWindow setResizable false
-    editWindow setModal true
+    val editWindow = new WindowW(caption = "Edit Item", height = "350px", width = "380px")
     val item = this getItem target
     val row = extractFromTable(item)
     val editExpenseForm = new EditExpenseForm(addExpenseView, row, editWindow)
-    val verticalLayout = editWindow.getContent
-    val panel = new Panel("Edit")
-    panel.addComponent(editExpenseForm.getComponents())
-    verticalLayout addComponent panel
+    val verticalLayout:VerticalLayoutW = editWindow.getContent.asInstanceOf[VerticalLayoutW]
+    val panel = new PanelW("Edit")
+    panel <~ editExpenseForm.getComponents()
+    verticalLayout <~ panel
     getWindow.addWindow(editWindow)
     editWindow.center()
   }

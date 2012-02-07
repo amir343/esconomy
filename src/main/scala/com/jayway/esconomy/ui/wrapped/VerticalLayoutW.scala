@@ -1,8 +1,9 @@
 package com.jayway.esconomy.ui.wrapped
 
-import com.vaadin.ui.{ComboBox, Panel, HorizontalLayout, VerticalLayout}
 import com.vaadin.ui.AbstractSelect.Filtering
 import com.vaadin.ui.AbstractOrderedLayout._
+import com.vaadin.ui._
+import com.vaadin.ui.Panel._
 
 
 /**
@@ -23,16 +24,21 @@ import com.vaadin.ui.AbstractOrderedLayout._
  * @author Amir Moulavi
  */
 
-class VerticalLayoutW(immediate:Boolean = true, 
+class VerticalLayoutW(immediate:Boolean = true,
                       height:String = null,
                       width:String = null,
                       spacing:Boolean = true,
                       margin:Boolean = true) extends VerticalLayout {
+  type T = VerticalLayoutW
   setImmediate(immediate)
   setMargin(margin)
   setSpacing(spacing)
   if (width != null) setWidth(width)
   if (height!= null) setHeight(height)
+
+  def <~(list:List[Component]) = list foreach { addComponent(_) }
+  def <~(c:Component) = addComponent(c)
+
 }
 
 class HorizontalLayoutW(immediate:Boolean = true,
@@ -45,6 +51,10 @@ class HorizontalLayoutW(immediate:Boolean = true,
   setSpacing(spacing)
   if (width != null) setWidth(width)
   if (height!= null) setHeight(height)
+
+  def <~(list:List[Component]) = list foreach { addComponent(_) }
+  def <~(c:Component) = addComponent(c)
+
 }
 
 class PanelW(caption:String = "",
@@ -55,6 +65,10 @@ class PanelW(caption:String = "",
   setImmediate(immediate)
   if (width != null) setWidth(width)
   if (height!= null) setHeight(height)
+
+  def <~(list:List[Component]) = list foreach { addComponent(_) }
+  def <~(c:Component) = addComponent(c)
+
 }
 
 class ComboBoxW(caption:String = null,
@@ -65,4 +79,20 @@ class ComboBoxW(caption:String = null,
   setFilteringMode(filteringMode)
   setImmediate(immediate)
   setNullSelectionAllowed(nullSelectionAllowed)
+
+  def <~(list:List[Any]) = list foreach { addItem(_) }
+  def <~(item:Any) = addItem(item)
+
+}
+
+class WindowW(caption:String = null,
+              width:String = null,
+              height:String = null,
+              modal:Boolean = true,
+              resizable:Boolean = false) extends Window {
+  setCaption(caption)
+  if (height != null) setHeight(height)
+  if (width != null) setWidth(width)
+  setResizable(resizable)
+  setModal(modal)
 }

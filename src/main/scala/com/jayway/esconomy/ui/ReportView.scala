@@ -15,6 +15,7 @@ import com.invient.vaadin.charts.InvientChartsConfig._
 import com.invient.vaadin.charts.InvientChartsConfig.AxisBase.AxisTitle
 import com.invient.vaadin.charts.Color.RGB
 import com.vaadin.data.Property.{ValueChangeListener, ValueChangeEvent}
+import com.vaadin.ui.Window.Notification
 
 
 /**
@@ -51,19 +52,18 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
   def getComponents = {
     constructPeriodLayout()
     mainLayout.setSizeFull()
-    mainLayout addComponent periodLayout
-    mainLayout addComponent chartLayout
-    mainPanel addComponent mainLayout
+    mainLayout <~ List(periodLayout, chartLayout)
+    mainPanel <~ mainLayout
     mainPanel
   }
 
   def constructPeriodLayout() = {
-    getYears.foreach(yearCombo.addItem(_))
+    yearCombo <~ getYears
     yearCombo.setValue(cal.get(Calendar.YEAR).toString)
     yearCombo addListener this
 
     monthCombo addListener this
-    months.foreach(monthCombo.addItem _)
+    monthCombo <~ months
     monthCombo.setValue(months.apply(cal.get(Calendar.MONTH)))
 
     showYearlyChkBox.setImmediate(true)
@@ -82,7 +82,7 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
       }
     })
     
-    List(yearCombo, monthCombo, showYearlyChkBox).foreach { periodLayout addComponent _ }
+    periodLayout <~ List(yearCombo, monthCombo, showYearlyChkBox)
 
   }
 
@@ -99,14 +99,14 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
 
   def getYearlyItemsGroupedByCategories() {
     queries.getYearlyItemsGroupedByCategoriesIn(yearCombo.getValue.toString.toInt) match {
-      case Left(x) =>
+      case Left(x) => mainLayout.getWindow.showNotification("Error happened: " + x, Notification.TYPE_ERROR_MESSAGE)
       case Right(x) => updateChart(x)
     }
   }
 
   def getItemsGroupedByCategories() {
     queries.getItemsGroupedByCategoriesIn(yearCombo.getValue.toString.toInt, months.indexOf(monthCombo.getValue.toString).toString.toInt) match {
-      case Left(x) =>
+      case Left(x) => mainLayout.getWindow.showNotification("Error happened: " + x, Notification.TYPE_ERROR_MESSAGE)
       case Right(x) => updateChart(x)
     }
   }
@@ -116,8 +116,7 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
     val barChart = getBarChart(list)
     val chart = getPieChart (list.map { x => (x._1, if (x._2 != 0.0) df.format(100 * x._2/totalExpense).toDouble else x._2)})
     chartLayout.removeAllComponents()
-    chartLayout.addComponent(chart)
-    chartLayout.addComponent(barChart)
+    chartLayout <~ List(chart,barChart)
   }
 
   def getPieChart(list:List[(String, Double)]) = {

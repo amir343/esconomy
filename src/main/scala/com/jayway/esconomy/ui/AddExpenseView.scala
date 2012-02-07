@@ -2,7 +2,6 @@ package com.jayway.esconomy.ui
 
 import java.util.Calendar
 import com.vaadin.data.Property
-import com.vaadin.ui.AbstractSelect.Filtering
 import com.vaadin.ui._
 import com.vaadin.data.Property.{ValueChangeListener, ValueChangeEvent}
 import wrapped.{ComboBoxW, PanelW, HorizontalLayoutW, VerticalLayoutW}
@@ -41,8 +40,7 @@ case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
     val verticalLayout = new VerticalLayoutW
     constructAddExpensePanel
     constructCurrentExpensesPanel
-    verticalLayout addComponent addExpensePanel
-    verticalLayout addComponent currentExpensesPanel
+    verticalLayout <~ List(addExpensePanel, currentExpensesPanel)
     verticalLayout
   }
   
@@ -60,12 +58,12 @@ case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
     val cal = Calendar.getInstance()
     val hori = new HorizontalLayoutW
 
-    getYears.foreach(yearCombo.addItem(_))
+    yearCombo <~ getYears
     yearCombo.setValue(cal.get(Calendar.YEAR).toString)
     yearCombo addListener this
 
     monthCombo addListener this
-    months.foreach(monthCombo.addItem _)
+    monthCombo <~ months
     monthCombo.setValue(months.apply(cal.get(Calendar.MONTH)))
 
     showAllChkBox.setImmediate(true)
