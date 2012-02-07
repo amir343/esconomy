@@ -11,6 +11,21 @@ Esconomy is your little economy application that helps you keep track of your ex
 [Vaadin]: http://vaadin.com/
 [MongoDB]: http://www.mongodb.org/
 
+How to build
+------------
+
+First try to run `sbt` and let him resolve the dependencies. Then run:
+
+	> vaadin-compile-widgetset
+
+After this stage, all the 3rd party Vaadin addons are compiled and you can start the Jetty web server:
+
+	> container:start
+
+Browse to `localhost:8080` and enjoy the free software!
+
+
+
 License
 -------
 
