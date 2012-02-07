@@ -5,12 +5,14 @@ import com.jayway.esconomy.domain.Item
 import com.vaadin.event.Action
 import com.vaadin.event.Action.Handler
 import com.jayway.esconomy.dao.{Commands, Queries}
-import com.vaadin.data.{Item => VaadinItem}
 import java.util.Date
 import collection.JavaConversions._
 import com.vaadin.ui.{Tree, Panel, Window, Table}
 import com.vaadin.ui.Window.Notification
 import com.jayway.esconomy.service.ComputeService
+import wrapped.ComboBoxW
+import com.vaadin.data.{Property, Item => VaadinItem}
+import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
 
 
 /**
@@ -46,9 +48,11 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
 
   val dataSource:IndexedContainer = new IndexedContainer()
 
+  val categories = queries.getAllCategories.right.get.map { x => x.category }
+
   List( ("Id", classOf[String]),
         ("Item name", classOf[String]),
-        ("Category", classOf[String]),
+        ("Category", classOf[ComboBoxW]),
         ("Date", classOf[Date]),
         ("Price", classOf[String]) )
     .foreach { x => dataSource.addContainerProperty(x._1, x._2, "")  }
@@ -111,17 +115,26 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
   def addToContainer(record:Item, dataSource:IndexedContainer) = {
     val itemId = dataSource.addItem()
     val item = dataSource.getItem(itemId)
+    val cats = new ComboBoxW()
+    categories.foreach { cats.addItem(_) }
+    cats.setValue(record.category)
+    cats.addListener(new ValueChangeListener {
+      def valueChange(event: ValueChangeEvent) {
+        val commands = new Commands
+        commands.saveItem(Item(record.id, record.itemName, record.price, record.date, cats.getValue.toString))
+      }
+    })
     item.getItemProperty("Id").setValue(record.id)
     item.getItemProperty("Item name").setValue(record.itemName)
-    item.getItemProperty("Category").setValue(record.category)
+    item.getItemProperty("Category").setValue(cats)
     item.getItemProperty("Date").setValue(record.date)
     item.getItemProperty("Price").setValue(record.price)
   }
 
   def editTableItem(target:AnyRef) {
     val editWindow = new Window("Edit Item")
-    editWindow setWidth "350px"
-    editWindow setHeight "340px"
+    editWindow setWidth "380px"
+    editWindow setHeight "350px"
     editWindow setResizable false
     editWindow setModal true
     val item = this getItem target

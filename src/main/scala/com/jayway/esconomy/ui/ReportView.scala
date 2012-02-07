@@ -152,9 +152,7 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
 
     chartConfig.setLegend(new Legend(false));
 
-    chartConfig.getTooltip.setFormatterJsFunc("function() {"
-            + " return '<b>'+ this.point.name +'</b>: '+ this.y +' %'; "
-            + "}")
+    chartConfig.getTooltip.setFormatterJsFunc("function() { return this.y +' SEK'; }")
 
     val chart = new InvientCharts(chartConfig)
 
