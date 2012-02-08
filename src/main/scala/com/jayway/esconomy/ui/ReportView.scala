@@ -200,7 +200,7 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
     colCfg.getDataLabel.setY(10)
     colCfg.getDataLabel.setColor(new RGB(255, 255, 255))
     colCfg.getDataLabel.setFormatterJsFunc("function() {" + " return this.y; " + "}")
-    colCfg.getDataLabel.setStyle(" { font: 'normal 13px Verdana, sans-serif' } ")
+    colCfg.getDataLabel.setStyle(" { font: 'normal 9px Verdana, sans-serif' } ")
     val seriesData = new XYSeries("", colCfg)
     val expenses = new LinkedHashSet[InvientCharts.DecimalPoint]()
     list.foreach { t => expenses.add(new DecimalPoint(seriesData, t._2))}

@@ -1,6 +1,7 @@
 package com.jayway.esconomy.util
 
-import java.util.Calendar
+import java.text.SimpleDateFormat
+import java.util.{Date, Calendar}
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -22,11 +23,21 @@ import java.util.Calendar
 
 object Utils {
 
+  val df = new SimpleDateFormat("yyyy-MM-dd")
   val cal = Calendar.getInstance()
   val months = List("January", "Feburary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
+  val UNKNOWN_CATEGORY = "Unkown category"
 
   def getYears:List[String] = {
     (1900 to cal.get(Calendar.YEAR)).map { _.toString }.reverse.toList
+  }
+
+  def formatDate(date:Date):String = {
+    df.format(date)
+  }
+
+  def getDate(date:String):Date = {
+    df.parse(date)
   }
 
 }

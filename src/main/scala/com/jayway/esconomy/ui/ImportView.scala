@@ -12,6 +12,7 @@ import com.jayway.esconomy.dao.{Commands, Queries}
 import java.text.SimpleDateFormat
 import com.jayway.esconomy.domain.Item
 import com.vaadin.ui.Window.Notification
+import com.jayway.esconomy.util.Utils._
 
 
 /**
@@ -122,10 +123,10 @@ case class ImportView(dashboard:Main) extends Receiver {
           val item = table.getItem(id)
           val price = item.getItemProperty("Price").getValue.asInstanceOf[String].toDouble
           if ( price < 0.0 ) {
-            val date = df.parse(item.getItemProperty("Date").getValue.asInstanceOf[String])
+            val date = getDate(item.getItemProperty("Date").getValue.asInstanceOf[String])
             val itName = item.getItemProperty("ItemName").getValue.asInstanceOf[String]
             val category = item.getItemProperty("Category").getValue.asInstanceOf[ComboBoxW].getValue match {
-              case null => "Unkown category"
+              case null => UNKNOWN_CATEGORY
               case a:String => a
             }
             commands.saveItem(Item(id, itName, -1*price, date, category))

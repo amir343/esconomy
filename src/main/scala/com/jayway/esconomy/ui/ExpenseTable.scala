@@ -7,12 +7,12 @@ import com.vaadin.event.Action.Handler
 import com.jayway.esconomy.dao.{Commands, Queries}
 import java.util.Date
 import collection.JavaConversions._
-import com.vaadin.ui.{Tree, Panel, Window, Table}
+import com.vaadin.ui.{Tree, Table}
 import com.vaadin.ui.Window.Notification
-import com.vaadin.data.{Property, Item => VaadinItem}
+import com.vaadin.data.{Item => VaadinItem}
 import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
 import wrapped.{WindowW, VerticalLayoutW, PanelW, ComboBoxW}
-
+import com.jayway.esconomy.util.Utils._
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -52,7 +52,7 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
   List( ("Id", classOf[String]),
         ("Item name", classOf[String]),
         ("Category", classOf[ComboBoxW]),
-        ("Date", classOf[Date]),
+        ("Date", classOf[String]),
         ("Price", classOf[String]) )
     .foreach { x => dataSource.addContainerProperty(x._1, x._2, "")  }
 
@@ -126,7 +126,7 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
     item.getItemProperty("Id").setValue(record.id)
     item.getItemProperty("Item name").setValue(record.itemName)
     item.getItemProperty("Category").setValue(cats)
-    item.getItemProperty("Date").setValue(record.date)
+    item.getItemProperty("Date").setValue(formatDate(record.date))
     item.getItemProperty("Price").setValue(record.price)
   }
 
@@ -158,7 +158,7 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
       item.getItemProperty("Id").getValue.toString,
       item.getItemProperty("Item name").getValue.toString,
       item.getItemProperty("Price").getValue.toString.toDouble,
-      item.getItemProperty("Date").getValue.asInstanceOf[Date],
+      getDate(item.getItemProperty("Date").getValue.asInstanceOf[String]),
       item.getItemProperty("Category").getValue.toString
     )
     row
