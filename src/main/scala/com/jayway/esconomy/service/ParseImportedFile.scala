@@ -24,7 +24,9 @@ import collection.JavaConversions._
 
 case class ParseImportedFile(file:File) {
 
-  val parsedItems = FileUtils.readLines(file, "UTF-8").foldLeft(List[(String, String, String)]()) {
+  type ItemTuple = (String, String, String)
+
+  val parsedItems = FileUtils.readLines(file, "UTF-8").foldLeft(List[ItemTuple]()) {
     (r, c) => 
       val tokens = c.split("\t")
       r ::: List((tokens.apply(0), tokens.apply(1), tokens.apply(2).replace("\"", "").replace(",", "")))
