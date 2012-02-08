@@ -131,11 +131,12 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
   }
 
   def editTableItem(target:AnyRef) {
-    val editWindow = new WindowW(caption = "Edit Item", height = "350px", width = "380px")
+    val editWindow = new WindowW(caption = "Edit Item", height = "380px", width = "380px")
     val item = this getItem target
     val row = extractFromTable(item)
     val editExpenseForm = new EditExpenseForm(addExpenseView, row, editWindow)
-    val verticalLayout:VerticalLayoutW = editWindow.getContent.asInstanceOf[VerticalLayoutW]
+    val verticalLayout = new  VerticalLayoutW
+    editWindow.addComponent(verticalLayout)
     val panel = new PanelW("Edit")
     panel <~ editExpenseForm.getComponents()
     verticalLayout <~ panel

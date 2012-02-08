@@ -1,10 +1,17 @@
 package com.jayway.esconomy.ui
 
-import wrapped.{ProgressIndicatorW, PanelW, HorizontalLayoutW, VerticalLayoutW}
-import com.vaadin.ui.{Button, Upload}
 import com.vaadin.ui.Button.ClickListener
 import com.vaadin.ui.Upload._
 import java.io.{FileOutputStream, File, OutputStream}
+import com.jayway.esconomy.service.ParseImportedFile
+import com.vaadin.ui.{Table, Button, Upload}
+import java.util.UUID
+import wrapped._
+import collection.JavaConversions._
+import com.jayway.esconomy.dao.{Commands, Queries}
+import java.text.SimpleDateFormat
+import com.jayway.esconomy.domain.Item
+import com.vaadin.ui.Window.Notification
 
 
 /**
@@ -32,9 +39,14 @@ case class ImportView(dashboard:Main) extends Receiver {
   val mainLayout = new VerticalLayoutW()
   val mainPanel = new PanelW(caption = "Import", width = "100%", height = "100%")
 
+  val queries = new Queries
+  val categories = queries.getAllCategories.right.get.map { x => x.category }
+  var file:File = _
   val upload = new Upload(null, this)
   val cancelBtn = new Button("Cancel")
+  val saveBtn = new Button("Save")
   val progressIndicator = new ProgressIndicatorW(visible = false)
+  val df = new SimpleDateFormat("yyyy-MM-dd")
 
   def getComponents = {
     constructUploadLayout()
@@ -72,6 +84,7 @@ case class ImportView(dashboard:Main) extends Receiver {
       def uploadFinished(event: FinishedEvent) {
         progressIndicator.setVisible(false)
         upload.setVisible(true)
+        updateTable(ParseImportedFile(file).getItems)
       }
     })
 
@@ -79,11 +92,52 @@ case class ImportView(dashboard:Main) extends Receiver {
   }
 
   override def receiveUpload(fileName:String, mimeType:String):OutputStream = {
-    val file = new File("/tmp/" + fileName)
+    file = new File("/tmp/" + fileName)
     val fos = new FileOutputStream(file)
     fos
   }
 
+  def updateTable(list:List[(String, String, String)]) {
+    val table = new Table()
+    table.setWidth("100%")
+    table.addContainerProperty("Date", classOf[String],  null)
+    table.addContainerProperty("ItemName", classOf[String], null)
+    table.addContainerProperty("Price", classOf[String],  null)
+    table.addContainerProperty("Category", classOf[ComboBoxW], null)
+
+    var itemIds = List[String]()
+
+    list.foreach { x =>
+      val cats = new ComboBoxW()
+      categories.foreach { i => cats.addItem(i) }
+      val itemId = UUID.randomUUID().toString
+      itemIds = itemIds ::: List(itemId)
+      table.addItem(Array(x._1, x._2, x._3, cats), itemId)
+    }
+    
+    saveBtn.addListener(new ClickListener {
+      def buttonClick(event: Button#ClickEvent) {
+        val commands = new Commands
+        itemIds.foreach { id =>
+          val item = table.getItem(id)
+          val price = item.getItemProperty("Price").getValue.asInstanceOf[String].toDouble
+          if ( price < 0.0 ) {
+            val date = df.parse(item.getItemProperty("Date").getValue.asInstanceOf[String])
+            val itName = item.getItemProperty("ItemName").getValue.asInstanceOf[String]
+            val category = item.getItemProperty("Category").getValue.asInstanceOf[ComboBoxW].getValue match {
+              case null => "Unkown category"
+              case a:String => a
+            }
+            commands.saveItem(Item(id, itName, -1*price, date, category))
+          }
+        }
+        upload.getWindow.showNotification("Items saved!", Notification.TYPE_HUMANIZED_MESSAGE)
+        tableLayout removeAllComponents()
+      }
+    })
+    
+    tableLayout <~ List(table, saveBtn)
+  }
   
 
 
