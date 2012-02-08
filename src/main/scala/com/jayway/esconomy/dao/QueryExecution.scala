@@ -31,7 +31,7 @@ class QueryExecution {
     mongoOperations.findAll(classOf[Item], itemCollection)
   }
 
-  def getAllItemsIn(year:Int, month:Int) = {
+  def allItemsIn(year:Int, month:Int) = {
     val cal = Calendar.getInstance()
     mongoOperations.findAll(classOf[Item], itemCollection).filter { x =>
       cal.setTime(x.date)
@@ -39,19 +39,19 @@ class QueryExecution {
     }
   }
 
-  def getAllCategories = {
+  def allCategories = {
     mongoOperations.findAll(classOf[Category], categoryCollection)
   }
 
-  def getItemsInCategory(category:String) = {
+  def itemsInCategory(category:String) = {
     mongoOperations.find(new Query(Criteria.where("category").is(category)),classOf[Item], itemCollection)
   }
 
-  def getItemsGroupedByCategoriesIn(year:Int, month:Int) = {
+  def itemsGroupedByCategoriesIn(year:Int, month:Int) = {
     val cal = Calendar.getInstance()
 
-    getAllCategories.foldLeft(List[(Category, List[Item])]()) { (r, coll) =>
-      val it:List[Item] = getItemsInCategory(coll.category).filter { item =>
+    allCategories.foldLeft(List[(Category, List[Item])]()) { (r, coll) =>
+      val it:List[Item] = itemsInCategory(coll.category).filter { item =>
         cal.setTime(item.date)
         if (cal.get(Calendar.YEAR) == year && cal.get(Calendar.MONTH) == month) true else false
       }.toList
@@ -61,11 +61,11 @@ class QueryExecution {
     }
   }
 
-  def getYearlyItemsGroupedByCategoriesIn(year:Int) = {
+  def yearlyItemsGroupedByCategoriesIn(year:Int) = {
     val cal = Calendar.getInstance()
 
-    getAllCategories.foldLeft(List[(Category, List[Item])]()) { (r, coll) =>
-      val it:List[Item] = getItemsInCategory(coll.category).filter { item =>
+    allCategories.foldLeft(List[(Category, List[Item])]()) { (r, coll) =>
+      val it:List[Item] = itemsInCategory(coll.category).filter { item =>
         cal.setTime(item.date)
         if (cal.get(Calendar.YEAR) == year) true else false
       }.toList

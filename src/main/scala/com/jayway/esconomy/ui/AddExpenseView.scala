@@ -36,20 +36,20 @@ case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
   val monthCombo = new ComboBoxW(caption = "Month")
   val showAllChkBox = new CheckBox("Show all items", false)
 
-  def getComponents = {
+  def components = {
     val verticalLayout = new VerticalLayoutW
-    constructAddExpensePanel
-    constructCurrentExpensesPanel
+    constructAddExpensePanel()
+    constructCurrentExpensesPanel()
     verticalLayout <~ List(addExpensePanel, currentExpensesPanel)
     verticalLayout
   }
   
-  def constructAddExpensePanel = {
+  def constructAddExpensePanel() {
     val addExpenseForm = new AddExpenseForm(this)
-    addExpensePanel addComponent (addExpenseForm.getComponents())
+    addExpensePanel addComponent (addExpenseForm.components)
   }
 
-  def constructCurrentExpensesPanel = {
+  def constructCurrentExpensesPanel() {
     currentExpensesPanel addComponent periodConfiguration
     currentExpensesPanel addComponent currentExpenseTable
   }
@@ -58,7 +58,7 @@ case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
     val cal = Calendar.getInstance()
     val hori = new HorizontalLayoutW
 
-    yearCombo <~ getYears
+    yearCombo <~ years
     yearCombo.setValue(cal.get(Calendar.YEAR).toString)
     yearCombo addListener this
 
@@ -70,13 +70,13 @@ case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
     showAllChkBox.addListener(new ValueChangeListener {
       def valueChange(event: ValueChangeEvent) {
         showAllChkBox.getValue.asInstanceOf[Boolean] match {
-          case true  => disablePeriodConfigs(); currentExpenseTable.getAllItems()
-          case false => enablePeriodConfig(); currentExpenseTable.getAllItemsIn(yearCombo.getValue.toString, months.indexOf(monthCombo.getValue.toString).toString)
+          case true  => disablePeriodConfigs(); currentExpenseTable.allItems()
+          case false => enablePeriodConfig(); currentExpenseTable.allItemsIn(yearCombo.getValue.toString, months.indexOf(monthCombo.getValue.toString).toString)
         }
       }
     })
 
-    List(label, yearCombo, monthCombo, showAllChkBox).foreach { hori.addComponent(_) }
+    hori <~ List(label, yearCombo, monthCombo, showAllChkBox)
     hori
   }
 
@@ -94,7 +94,7 @@ case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
 
   def valueChange(event:ValueChangeEvent) {
     if ( yearCombo.getValue != null && monthCombo.getValue != null ) {
-      currentExpenseTable.getAllItemsIn(yearCombo.getValue.toString, months.indexOf(monthCombo.getValue.toString).toString)
+      currentExpenseTable.allItemsIn(yearCombo.getValue.toString, months.indexOf(monthCombo.getValue.toString).toString)
     } else {
       println("One of the combo was null!")
     }
@@ -102,8 +102,8 @@ case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
 
   def decideTheView() {
     showAllChkBox.getValue.asInstanceOf[Boolean] match {
-      case true  => currentExpenseTable.getAllItems()
-      case false => currentExpenseTable.getAllItemsIn(yearCombo.getValue.toString, months.indexOf(monthCombo.getValue.toString).toString)
+      case true  => currentExpenseTable.allItems()
+      case false => currentExpenseTable.allItemsIn(yearCombo.getValue.toString, months.indexOf(monthCombo.getValue.toString).toString)
     }
   }
 

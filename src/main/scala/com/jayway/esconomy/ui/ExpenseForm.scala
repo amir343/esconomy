@@ -9,6 +9,7 @@ import collection.JavaConversions._
 import com.vaadin.ui._
 import com.vaadin.event.ShortcutAction.KeyCode
 import org.vaadin.autoreplacefield.DoubleField
+import wrapped.GridLayoutW
 
 
 /**
@@ -45,27 +46,23 @@ trait ExpenseForm {
 
   def construct(btn:Button) = {
     val queries = new Queries
-    queries.getAllCategories match {
+    queries.allCategories match {
       case Left(x) =>
       case Right(x) => x.foreach { c => categoryCombo.addItem(c.category) }
     }
-    val gridLayout = new GridLayout(2,5)
-    gridLayout setSpacing true
-    gridLayout setHeight "100%"
-    gridLayout setWidth "100%"
-    gridLayout setImmediate true
+    val gridLayout = new GridLayoutW(columns = 2, rows = 5, height = "100%", width = "100%")
 
     dateInput.setResolution(DateField.RESOLUTION_DAY)
     dateInput.setValue(new Date())
 
     val components = List(nameLbl, nameTxt, priceLbl, priceTxt, dateLbl, dateInput, categoryLbl, categoryCombo, btn)
     components foreach { com:AbstractComponent => com.setImmediate(true) }
-    components foreach { gridLayout.addComponent(_) }
+    gridLayout <~ components
     nameTxt focus()
     gridLayout
   }
 
-  def getComponents:GridLayout
+  def components:GridLayout
 
 }
 
@@ -75,7 +72,7 @@ class AddExpenseForm(val expenseView:AddExpenseView) extends ExpenseForm with Bu
   addBtn setClickShortcut KeyCode.ENTER
   addBtn addListener this
 
-  def getComponents():GridLayout = {
+  def components:GridLayout = {
     construct(addBtn)
   }
 
@@ -111,7 +108,7 @@ class EditExpenseForm(val expenseView:AddExpenseView, val item:Item, val window:
   priceTxt.setValue(item.price.toString)
   dateInput.setValue(item.date)
 
-  def getComponents():GridLayout = {
+  def components:GridLayout = {
     val grid = construct(editBtn)
     categoryCombo.setValue(item.category)
     grid

@@ -30,25 +30,24 @@ class Main extends Application {
   val tree = new Tree
 
   def init() {
-
     setMainWindow(new Window("Esconomy - Little Economy Application"))
-    getMainWindow.setContent(getMainLayout)
+    getMainWindow.setContent(mainLayout)
     setTheme("runo")
   }
 
-  def getMainLayout = {
+  def mainLayout = {
     val mainLayout = new VerticalSplitPanel
     mainLayout setHeight "100%"
     mainLayout setWidth "100%"
     mainLayout.setSplitPosition(100, Sizeable.UNITS_PIXELS)
     mainLayout setMargin true
 
-    mainLayout addComponent getTopLayout
-    mainLayout addComponent getBottomLayout
+    mainLayout addComponent topLayout
+    mainLayout addComponent bottomLayout
     mainLayout
   }
 
-  def getTopLayout = {
+  def topLayout = {
     val topLayout = new VerticalLayoutW
 
     val title = new Label("<h1>Welcome to Esconomy!</h1>")
@@ -57,14 +56,14 @@ class Main extends Application {
     topLayout
   }
 
-  def getBottomLayout = {
+  def bottomLayout = {
     val bottomLayout = new HorizontalSplitPanel
     bottomLayout setHeight "100%"
     bottomLayout setWidth "100%"
     bottomLayout setSplitPosition 10
     bottomLayout setMargin true
     
-    bottomLayout addComponent getNavigationMenu
+    bottomLayout addComponent navigationMenu
     bottomLayout addComponent getCenterLayout
     
     bottomLayout
@@ -74,7 +73,7 @@ class Main extends Application {
     centerLayout
   }
   
-  def getNavigationMenu = {
+  def navigationMenu = {
     val nav = new VerticalLayoutW()
 
     tree setImmediate true
@@ -96,23 +95,23 @@ class Main extends Application {
   }
   
   def switchToAddExpenseView() {
-    centerLayout.removeAllComponents()
-    centerLayout <~ AddExpenseView(this).getComponents
+    getCenterLayout.removeAllComponents()
+    getCenterLayout <~ AddExpenseView(this).components
   }
 
   def switchToAddCategoryView() {
-    centerLayout.removeAllComponents()
-    centerLayout <~ CategoryView(this).getComponents
+    getCenterLayout.removeAllComponents()
+    getCenterLayout <~ CategoryView(this).components
   }
 
   def switchToReportView() {
-    centerLayout.removeAllComponents()
-    centerLayout <~ ReportView(this).getComponents
+    getCenterLayout.removeAllComponents()
+    getCenterLayout <~ ReportView(this).components
   }
 
   def switchToImportView() {
-    centerLayout.removeAllComponents()
-    centerLayout <~ ImportView(this).getComponents
+    getCenterLayout.removeAllComponents()
+    getCenterLayout <~ ImportView(this).getComponents
   }
 
 

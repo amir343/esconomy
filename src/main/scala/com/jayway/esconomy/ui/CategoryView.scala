@@ -35,28 +35,27 @@ case class CategoryView(dashboard:Main) extends Button.ClickListener {
   addBtn setClickShortcut KeyCode.ENTER
   val categoryTable = new CategoryTable(dashboard.tree)
 
-  def getComponents = {
+  def components = {
     val panel = new Panel("Categories")
     val verticalLayout = new VerticalLayoutW ( width = "100%")
-    verticalLayout <~ List(getAddCategoryLayout, categoryTable)
+    verticalLayout <~ List(addCategoryLayout, categoryTable)
     panel.addComponent(verticalLayout)
     panel
   }
   
-  def getAddCategoryLayout = {
+  def addCategoryLayout:HorizontalLayoutW = {
     val hori = new HorizontalLayoutW {}
     hori <~ List(label, categories, addBtn)
     categories focus()
     hori
   }
 
-  def buttonClick(event:Button#ClickEvent) = {
+  def buttonClick(event:Button#ClickEvent) {
     val commands = new Commands
     commands.saveCategory(Category(category = categories.getValue.toString  ))
     addBtn.getWindow.showNotification("Notification", "Category '" + categories.getValue + "' is added", Notification.TYPE_TRAY_NOTIFICATION)
-    categoryTable.getAllItems()
+    categoryTable.allItems()
     categories.setValue("")
-
   }
 
 }

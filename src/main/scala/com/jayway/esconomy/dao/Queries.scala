@@ -27,28 +27,28 @@ class Queries {
 
   val exec = new QueryExecution
 
-  def getAllItems = {
+  def allItems = {
     try { Right(exec.findAll()) }
     catch { case e => Left(e.getMessage) }
   }
   
-  def getAllItemsIn(year:Int, month:Int) = {
-    try { Right(exec.getAllItemsIn(year, month)) }
+  def allItemsIn(year:Int, month:Int) = {
+    try { Right(exec.allItemsIn(year, month)) }
     catch { case e => Left(e.getMessage)}
   }
 
-  def getAllCategories = {
-    try { Right(exec.getAllCategories) }
+  def allCategories = {
+    try { Right(exec.allCategories) }
     catch { case e => Left(e.getMessage)}
   }
   
-  def getItemsGroupedByCategoriesIn(year:Int, month:Int) = {
-    try { Right(exec.getItemsGroupedByCategoriesIn(year, month)) }
+  def itemsGroupedByCategoriesIn(year:Int, month:Int) = {
+    try { Right(exec.itemsGroupedByCategoriesIn(year, month)) }
     catch { case e => Left(e.getMessage)}
   }
 
-  def getYearlyItemsGroupedByCategoriesIn(year:Int) = {
-    try { Right(exec.getYearlyItemsGroupedByCategoriesIn(year)) }
+  def yearlyItemsGroupedByCategoriesIn(year:Int) = {
+    try { Right(exec.yearlyItemsGroupedByCategoriesIn(year)) }
     catch { case e => Left(e.getMessage)}
   }
 

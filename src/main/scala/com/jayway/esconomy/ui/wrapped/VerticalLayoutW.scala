@@ -1,9 +1,9 @@
 package com.jayway.esconomy.ui.wrapped
 
-import com.vaadin.ui.AbstractSelect.Filtering
 import com.vaadin.ui.AbstractOrderedLayout._
 import com.vaadin.ui._
 import com.vaadin.ui.Panel._
+import com.vaadin.ui.AbstractSelect._
 
 
 /**
@@ -101,4 +101,19 @@ class ProgressIndicatorW(immediate:Boolean = true,
                          visible:Boolean = true) extends ProgressIndicator {
   setImmediate(immediate)
   setVisible(visible)
+}
+
+class GridLayoutW(columns:Int,
+                  rows:Int,
+                  immediate:Boolean = true,
+                  spacing:Boolean = true,
+                  height:String = null,
+                  width:String = null
+                  ) extends GridLayout(columns, rows) {
+  setSpacing(spacing)
+  setImmediate(immediate)
+  if (height != null) setHeight(height)
+  if (width != null) setWidth(width)
+  def <~(list:List[Component]) = list foreach { addComponent(_) }
+  def <~(component:Component) = addComponent(component)
 }

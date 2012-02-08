@@ -28,7 +28,7 @@ object Utils {
   val months = List("January", "Feburary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
   val UNKNOWN_CATEGORY = "Unkown category"
 
-  def getYears:List[String] = {
+  def years:List[String] = {
     (1900 to cal.get(Calendar.YEAR)).map { _.toString }.reverse.toList
   }
 

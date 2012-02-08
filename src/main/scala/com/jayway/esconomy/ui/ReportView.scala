@@ -49,7 +49,7 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
   val monthCombo = new ComboBoxW(caption = "Month")
   val showYearlyChkBox = new CheckBox("Show yearly", false)
   
-  def getComponents = {
+  def components = {
     constructPeriodLayout()
     mainLayout.setSizeFull()
     mainLayout <~ List(periodLayout, chartLayout)
@@ -57,8 +57,8 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
     mainPanel
   }
 
-  def constructPeriodLayout() = {
-    yearCombo <~ getYears
+  def constructPeriodLayout() {
+    yearCombo <~ years
     yearCombo.setValue(cal.get(Calendar.YEAR).toString)
     yearCombo addListener this
 
@@ -72,11 +72,11 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
         showYearlyChkBox.getValue.asInstanceOf[Boolean] match {
           case false => {
             monthCombo.setEnabled(true)
-            getItemsGroupedByCategories()
+            itemsGroupedByCategories()
           }
           case true  => {
             monthCombo.setEnabled(false)
-            getYearlyItemsGroupedByCategories()
+            yearlyItemsGroupedByCategories()
           }
         }
       }
@@ -89,23 +89,23 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
   def valueChange(event:ValueChangeEvent) {
     if ( yearCombo.getValue != null && monthCombo.getValue != null ) {
       showYearlyChkBox.getValue.asInstanceOf[Boolean] match {
-        case true => getYearlyItemsGroupedByCategories()
-        case false => getItemsGroupedByCategories()
+        case true => yearlyItemsGroupedByCategories()
+        case false => itemsGroupedByCategories()
       }
     } else {
       println("One of the combo was null!")
     }
   }
 
-  def getYearlyItemsGroupedByCategories() {
-    queries.getYearlyItemsGroupedByCategoriesIn(yearCombo.getValue.toString.toInt) match {
+  def yearlyItemsGroupedByCategories() {
+    queries.yearlyItemsGroupedByCategoriesIn(yearCombo.getValue.toString.toInt) match {
       case Left(x) => mainLayout.getWindow.showNotification("Error happened: " + x, Notification.TYPE_ERROR_MESSAGE)
       case Right(x) => updateChart(x)
     }
   }
 
-  def getItemsGroupedByCategories() {
-    queries.getItemsGroupedByCategoriesIn(yearCombo.getValue.toString.toInt, months.indexOf(monthCombo.getValue.toString).toString.toInt) match {
+  def itemsGroupedByCategories() {
+    queries.itemsGroupedByCategoriesIn(yearCombo.getValue.toString.toInt, months.indexOf(monthCombo.getValue.toString).toString.toInt) match {
       case Left(x) => mainLayout.getWindow.showNotification("Error happened: " + x, Notification.TYPE_ERROR_MESSAGE)
       case Right(x) => updateChart(x)
     }
@@ -113,13 +113,13 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
 
   def updateChart(list:List[(String, Double)]) = {
     val totalExpense = list.foldLeft(0.0)( (r,c) => r + c._2)
-    val barChart = getBarChart(list)
-    val chart = getPieChart (list.map { x => (x._1, if (x._2 != 0.0) df.format(100 * x._2/totalExpense).toDouble else x._2)})
+    val bChart = barChart(list)
+    val chart = pieChart (list.map { x => (x._1, if (x._2 != 0.0) df.format(100 * x._2/totalExpense).toDouble else x._2)})
     chartLayout.removeAllComponents()
-    chartLayout <~ List(chart,barChart)
+    chartLayout <~ List(chart,bChart)
   }
 
-  def getPieChart(list:List[(String, Double)]) = {
+  def pieChart(list:List[(String, Double)]) = {
     val chartConfig = new InvientChartsConfig()
     chartConfig.getGeneralChartConfig.setType(SeriesType.PIE)
 
@@ -154,7 +154,7 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
     chart
   }
   
-  def getBarChart(list:List[(String, Double)]) = {
+  def barChart(list:List[(String, Double)]) = {
     val chartConfig = new InvientChartsConfig()
     chartConfig.getGeneralChartConfig.setType(SeriesType.COLUMN)
     chartConfig.getGeneralChartConfig.setMargin(new Margin())

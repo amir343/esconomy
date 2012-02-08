@@ -50,7 +50,7 @@ class CategoryTable(tree:Tree) extends Table {
        ("Category", classOf[String]))
     .foreach { x => dataSource.addContainerProperty(x._1, x._2, "")  }
 
-  getAllItems()
+  allItems()
 
   this addActionHandler { new Handler {
     def getActions(target: AnyRef, sender: AnyRef): Array[Action] = Array(editAction, removeAction)
@@ -63,11 +63,11 @@ class CategoryTable(tree:Tree) extends Table {
     }
   }}
 
-  def getAllItems() = {
+  def allItems() = {
     this removeAllItems()
     dataSource removeAllItems()
 
-    queries.getAllCategories match {
+    queries.allCategories match {
       case Left(x) => tree.getWindow.showNotification("Error", x.toString, Notification.TYPE_ERROR_MESSAGE)
       case Right(x) => { x.foreach { i => addToContainer(i, dataSource)} }
       }
@@ -82,7 +82,7 @@ class CategoryTable(tree:Tree) extends Table {
     val commands = new Commands
     commands.deleteCategory(row)
 
-    getAllItems()
+    allItems()
   }  
 
   def editTableItem(target:AnyRef) {
@@ -127,7 +127,7 @@ class CategoryTable(tree:Tree) extends Table {
       def buttonClick(event: Button#ClickEvent) {
         val commands = new Commands
         commands.updateCategory(Category(category.id, categoryTxt.getValue.toString))
-        getAllItems()
+        allItems()
         getWindow.removeWindow(window)
       }
     })

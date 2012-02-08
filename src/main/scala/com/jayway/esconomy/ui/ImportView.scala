@@ -41,13 +41,12 @@ case class ImportView(dashboard:Main) extends Receiver {
   val mainPanel = new PanelW(caption = "Import", width = "100%", height = "100%")
 
   val queries = new Queries
-  val categories = queries.getAllCategories.right.get.map { x => x.category }
+  val categories = queries.allCategories.right.get.map { x => x.category }
   var file:File = _
   val upload = new Upload(null, this)
   val cancelBtn = new Button("Cancel")
   val saveBtn = new Button("Save")
   val progressIndicator = new ProgressIndicatorW(visible = false)
-  val df = new SimpleDateFormat("yyyy-MM-dd")
 
   def getComponents = {
     constructUploadLayout()
@@ -85,7 +84,7 @@ case class ImportView(dashboard:Main) extends Receiver {
       def uploadFinished(event: FinishedEvent) {
         progressIndicator.setVisible(false)
         upload.setVisible(true)
-        updateTable(ParseImportedFile(file).getItems)
+        updateTable(ParseImportedFile(file).items)
       }
     })
 

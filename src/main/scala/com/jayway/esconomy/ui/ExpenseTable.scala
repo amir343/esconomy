@@ -5,7 +5,6 @@ import com.jayway.esconomy.domain.Item
 import com.vaadin.event.Action
 import com.vaadin.event.Action.Handler
 import com.jayway.esconomy.dao.{Commands, Queries}
-import java.util.Date
 import collection.JavaConversions._
 import com.vaadin.ui.{Tree, Table}
 import com.vaadin.ui.Window.Notification
@@ -47,7 +46,7 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
 
   val dataSource:IndexedContainer = new IndexedContainer()
 
-  val categories = queries.getAllCategories.right.get.map { x => x.category }
+  val categories = queries.allCategories.right.get.map { x => x.category }
 
   List( ("Id", classOf[String]),
         ("Item name", classOf[String]),
@@ -56,7 +55,7 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
         ("Price", classOf[String]) )
     .foreach { x => dataSource.addContainerProperty(x._1, x._2, "")  }
 
-  getAllItems()
+  allItems()
 
   this addActionHandler { new Handler {
     def getActions(target: AnyRef, sender: AnyRef): Array[Action] = Array(editAction, removeAction)
@@ -69,12 +68,12 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
     }
   }}
 
-  def getAllItems() {
+  def allItems() {
       self removeAllItems()
       dataSource removeAllItems()
       var totalSum = 0.0
 
-      queries.getAllItems match {
+      queries.allItems match {
         case Left(x) => tree.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
         case Right(x) => {
           x.foreach { i =>
@@ -90,12 +89,12 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
       self setVisibleColumns Array[AnyRef]("Item name", "Category", "Date", "Price")
   }
   
-  def getAllItemsIn(year:String, month:String) {
+  def allItemsIn(year:String, month:String) {
       self removeAllItems()
       dataSource removeAllItems()
       var totalSum = 0.0
 
-      queries.getAllItemsIn(year.toInt, month.toInt) match {
+      queries.allItemsIn(year.toInt, month.toInt) match {
         case Left(x) =>  tree.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
         case Right(x) => {
           x.foreach { i =>
@@ -138,7 +137,7 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
     val verticalLayout = new  VerticalLayoutW
     editWindow.addComponent(verticalLayout)
     val panel = new PanelW("Edit")
-    panel <~ editExpenseForm.getComponents()
+    panel <~ editExpenseForm.components
     verticalLayout <~ panel
     getWindow.addWindow(editWindow)
     editWindow.center()
@@ -150,7 +149,7 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
     val commands = new Commands
     commands.deleteItem(row)
 
-    getAllItems()
+    allItems()
   }
 
   def extractFromTable(item:VaadinItem):Item = {
