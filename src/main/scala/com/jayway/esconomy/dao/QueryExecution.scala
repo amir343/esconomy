@@ -1,7 +1,7 @@
 package com.jayway.esconomy.dao
 
 import com.jayway.esconomy.db.MongoOps._
-import collection.JavaConversions._
+import collection.JavaConverters._
 import java.util.Calendar
 import com.jayway.esconomy.domain.{Category, Item}
 import org.springframework.data.mongodb.core.query.{Criteria, Query}
@@ -27,27 +27,21 @@ import org.springframework.data.mongodb.core.query.{Criteria, Query}
 
 class QueryExecution {
 
-  def findAll() = {
-    mongoOperations.findAll(classOf[Item], itemCollection)
-  }
+  def findAll:List[Item] = mongoOperations.findAll(classOf[Item], itemCollection).asScala.toList
 
-  def allItemsIn(year:Int, month:Int) = {
+  def allItemsIn(year:Int, month:Int):List[Item] = {
     val cal = Calendar.getInstance()
-    mongoOperations.findAll(classOf[Item], itemCollection).filter { x =>
+    mongoOperations.findAll(classOf[Item], itemCollection).asScala.toList.filter { x =>
       cal.setTime(x.date)
       if (cal.get(Calendar.YEAR) == year && cal.get(Calendar.MONTH) == month) true else false
     }
   }
 
-  def allCategories = {
-    mongoOperations.findAll(classOf[Category], categoryCollection)
-  }
+  def allCategories:List[Category] = mongoOperations.findAll(classOf[Category], categoryCollection).asScala.toList
 
-  def itemsInCategory(category:String) = {
-    mongoOperations.find(new Query(Criteria.where("category").is(category)),classOf[Item], itemCollection)
-  }
+  def itemsInCategory(category:String):List[Item] = mongoOperations.find(new Query(Criteria.where("category").is(category)),classOf[Item], itemCollection).asScala.toList
 
-  def itemsGroupedByCategoriesIn(year:Int, month:Int) = {
+  def itemsGroupedByCategoriesIn(year:Int, month:Int):List[(String, Double)] = {
     val cal = Calendar.getInstance()
 
     allCategories.foldLeft(List[(Category, List[Item])]()) { (r, coll) =>
@@ -61,7 +55,7 @@ class QueryExecution {
     }
   }
 
-  def yearlyItemsGroupedByCategoriesIn(year:Int) = {
+  def yearlyItemsGroupedByCategoriesIn(year:Int):List[(String, Double)] = {
     val cal = Calendar.getInstance()
 
     allCategories.foldLeft(List[(Category, List[Item])]()) { (r, coll) =>
