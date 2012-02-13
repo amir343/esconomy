@@ -10,6 +10,7 @@ import com.vaadin.ui._
 import com.vaadin.event.ShortcutAction.KeyCode
 import org.vaadin.autoreplacefield.DoubleField
 import wrapped.GridLayoutW
+import scalaz.{Success, Failure}
 
 
 /**
@@ -47,8 +48,8 @@ trait ExpenseForm {
   def construct(btn:Button) = {
     val queries = new Queries
     queries.allCategories match {
-      case Left(x) =>
-      case Right(x) => x.foreach { c => categoryCombo.addItem(c.category) }
+      case Failure(x) =>
+      case Success(x) => x.foreach { c => categoryCombo.addItem(c.category) }
     }
     val gridLayout = new GridLayoutW(columns = 2, rows = 5, height = "100%", width = "100%")
 

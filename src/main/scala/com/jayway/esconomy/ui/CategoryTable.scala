@@ -12,6 +12,7 @@ import com.jayway.esconomy.dao.{Commands, Queries}
 import com.vaadin.ui.Window.Notification
 import com.vaadin.event.ShortcutAction.KeyCode
 import com.jayway.esconomy.service.ComputeService
+import scalaz.{Success, Failure}
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -68,8 +69,8 @@ class CategoryTable(tree:Tree) extends Table {
     dataSource removeAllItems()
 
     queries.allCategories match {
-      case Left(x) => tree.getWindow.showNotification("Error", x.toString, Notification.TYPE_ERROR_MESSAGE)
-      case Right(x) => { x.foreach { i => addToContainer(i, dataSource)} }
+      case Failure(x) => tree.getWindow.showNotification("Error", x.toString, Notification.TYPE_ERROR_MESSAGE)
+      case Success(x) => { x.foreach { i => addToContainer(i, dataSource)} }
       }
 
     this setContainerDataSource dataSource

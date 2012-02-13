@@ -6,10 +6,12 @@ Esconomy is your little economy application that helps you keep track of your ex
 * [sbt] as the build tool
 * [Vaadin] as the UI framework
 * [MongoDB] as the database
+* [Scalaz] as complementary functional library to Scala Standard
 
 [sbt]: https://github.com/harrah/xsbt
 [Vaadin]: http://vaadin.com/
 [MongoDB]: http://www.mongodb.org/
+[Scalaz]: https://github.com/scalaz/scalaz
 
 How to build
 ------------

@@ -16,6 +16,7 @@ import com.invient.vaadin.charts.InvientChartsConfig.AxisBase.AxisTitle
 import com.invient.vaadin.charts.Color.RGB
 import com.vaadin.data.Property.{ValueChangeListener, ValueChangeEvent}
 import com.vaadin.ui.Window.Notification
+import scalaz.{Success, Failure}
 
 
 /**
@@ -99,15 +100,15 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
 
   def yearlyItemsGroupedByCategories() {
     queries.yearlyItemsGroupedByCategoriesIn(yearCombo.getValue.toString.toInt) match {
-      case Left(x) => mainLayout.getWindow.showNotification("Error happened: " + x, Notification.TYPE_ERROR_MESSAGE)
-      case Right(x) => updateChart(x)
+      case Failure(x) => mainLayout.getWindow.showNotification("Error happened: " + x, Notification.TYPE_ERROR_MESSAGE)
+      case Success(x) => updateChart(x)
     }
   }
 
   def itemsGroupedByCategories() {
     queries.itemsGroupedByCategoriesIn(yearCombo.getValue.toString.toInt, months.indexOf(monthCombo.getValue.toString).toString.toInt) match {
-      case Left(x) => mainLayout.getWindow.showNotification("Error happened: " + x, Notification.TYPE_ERROR_MESSAGE)
-      case Right(x) => updateChart(x)
+      case Failure(x) => mainLayout.getWindow.showNotification("Error happened: " + x, Notification.TYPE_ERROR_MESSAGE)
+      case Success(x) => updateChart(x)
     }
   }
 

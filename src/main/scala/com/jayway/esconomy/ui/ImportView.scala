@@ -15,6 +15,7 @@ import com.vaadin.ui.Window.Notification
 import com.jayway.esconomy.util.Utils._
 import com.vaadin.event.Action
 import com.vaadin.event.Action.Handler
+import scalaz.{Success, Failure}
 
 
 /**
@@ -44,11 +45,11 @@ case class ImportView(dashboard:Main) extends Receiver {
 
   val queries = new Queries
   lazy val categories = queries.allCategories match {
-    case Left(x)  => {
+    case Failure(x)  => {
       upload.getWindow.showNotification("Error happened: " + x, Notification.TYPE_ERROR_MESSAGE)
       List()
     }
-    case Right(x) => x.map { x => x.category }
+    case Success(x) => x.map { x => x.category }
   }
   var file:File = _
   val upload = new Upload(null, this)

@@ -12,6 +12,7 @@ import com.vaadin.data.{Item => VaadinItem}
 import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
 import wrapped.{WindowW, VerticalLayoutW, PanelW, ComboBoxW}
 import com.jayway.esconomy.util.Utils._
+import scalaz.{Failure, Success}
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -46,7 +47,10 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
 
   val dataSource:IndexedContainer = new IndexedContainer()
 
-  val categories = queries.allCategories.right.get.map { x => x.category }
+  val categories = queries.allCategories match {
+    case Success(x) => x map { i => i.category }
+    case Failure(x) => List()
+  }
 
   List( ("Id", classOf[String]),
         ("Item name", classOf[String]),
@@ -74,8 +78,8 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
       var totalSum = 0.0
 
       queries.allItems match {
-        case Left(x) => tree.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
-        case Right(x) => {
+        case Failure(x) => tree.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
+        case Success(x) => {
           x.foreach { i =>
             addToContainer(i, dataSource)
             totalSum += i.price
@@ -95,8 +99,8 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
       var totalSum = 0.0
 
       queries.allItemsIn(year.toInt, month.toInt) match {
-        case Left(x) =>  tree.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
-        case Right(x) => {
+        case Failure(x) =>  tree.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
+        case Success(x) => {
           x.foreach { i =>
             addToContainer(i, dataSource)
             totalSum += i.price

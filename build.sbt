@@ -30,5 +30,6 @@ libraryDependencies ++= Seq(
   "org.springframework.data" % "spring-data-mongodb" % "1.0.0.RC1",
   "cglib" % "cglib" % "2.2",
   "org.mortbay.jetty" % "jetty" % "6.1.22" % "container",
-  "commons-io" % "commons-io" % "2.1"
+  "commons-io" % "commons-io" % "2.1",
+  "org.scalaz" %% "scalaz-core" % "6.0.4"
 )

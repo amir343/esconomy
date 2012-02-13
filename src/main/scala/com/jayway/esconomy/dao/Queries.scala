@@ -4,6 +4,8 @@ import com.jayway.esconomy.db.MongoOps._
 import collection.JavaConversions._
 import java.util.Calendar
 import com.jayway.esconomy.domain.{Category, Item}
+import scalaz._
+import Scalaz._
 
 
 /**
@@ -28,28 +30,28 @@ class Queries {
   val exec = new QueryExecution
 
   def allItems = {
-    try { Right(exec.findAll()) }
-    catch { case e => Left(e.getMessage) }
+    try { Success(exec.findAll()) }
+    catch { case e => Failure(e.getMessage) }
   }
   
   def allItemsIn(year:Int, month:Int) = {
-    try { Right(exec.allItemsIn(year, month)) }
-    catch { case e => Left(e.getMessage)}
+    try { Success(exec.allItemsIn(year, month)) }
+    catch { case e => Failure(e.getMessage)}
   }
 
   def allCategories = {
-    try { Right(exec.allCategories) }
-    catch { case e => Left(e.getMessage)}
+    try { Success(exec.allCategories) }
+    catch { case e => Failure(e.getMessage)}
   }
   
   def itemsGroupedByCategoriesIn(year:Int, month:Int) = {
-    try { Right(exec.itemsGroupedByCategoriesIn(year, month)) }
-    catch { case e => Left(e.getMessage)}
+    try { Success(exec.itemsGroupedByCategoriesIn(year, month)) }
+    catch { case e => Failure(e.getMessage)}
   }
 
   def yearlyItemsGroupedByCategoriesIn(year:Int) = {
-    try { Right(exec.yearlyItemsGroupedByCategoriesIn(year)) }
-    catch { case e => Left(e.getMessage)}
+    try { Success(exec.yearlyItemsGroupedByCategoriesIn(year)) }
+    catch { case e => Failure(e.getMessage)}
   }
 
 }
