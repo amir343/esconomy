@@ -13,6 +13,8 @@ import java.text.SimpleDateFormat
 import com.jayway.esconomy.domain.Item
 import com.vaadin.ui.Window.Notification
 import com.jayway.esconomy.util.Utils._
+import com.vaadin.event.Action
+import com.vaadin.event.Action.Handler
 
 
 /**
@@ -41,12 +43,19 @@ case class ImportView(dashboard:Main) extends Receiver {
   val mainPanel = new PanelW(caption = "Import", width = "100%", height = "100%")
 
   val queries = new Queries
-  val categories = queries.allCategories.right.get.map { x => x.category }
+  lazy val categories = queries.allCategories match {
+    case Left(x)  => {
+      upload.getWindow.showNotification("Error happened: " + x, Notification.TYPE_ERROR_MESSAGE)
+      List()
+    }
+    case Right(x) => x.map { x => x.category }
+  }
   var file:File = _
   val upload = new Upload(null, this)
   val cancelBtn = new Button("Cancel")
   val saveBtn = new Button("Save")
   val progressIndicator = new ProgressIndicatorW(visible = false)
+  val removeAction = new Action("Remove")
 
   def getComponents = {
     constructUploadLayout()
@@ -104,6 +113,18 @@ case class ImportView(dashboard:Main) extends Receiver {
     table.addContainerProperty("ItemName", classOf[String], null)
     table.addContainerProperty("Price", classOf[String],  null)
     table.addContainerProperty("Category", classOf[ComboBoxW], null)
+    table.setSelectable(true)
+
+    table addActionHandler { new Handler {
+      def getActions(target: AnyRef, sender: AnyRef): Array[Action] = Array(removeAction)
+
+      def handleAction(action: Action, sender: AnyRef, target: AnyRef) {
+        action match {
+          case `removeAction` => table.removeItem(target)
+        }
+      }
+    }}
+
 
     var itemIds = List[String]()
 
@@ -138,7 +159,6 @@ case class ImportView(dashboard:Main) extends Receiver {
     
     tableLayout <~ List(table, saveBtn)
   }
-  
 
-
+ 
 }
