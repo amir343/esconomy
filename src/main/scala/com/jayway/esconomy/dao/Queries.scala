@@ -26,12 +26,12 @@ class Queries {
   val exec = new QueryExecution
 
   def allItems:Validation[String, List[Item]] = {
-    try { Success(exec.findAll) }
+    try { Success(exec.findAll.sortWith( (i1, i2) => i1.date.compareTo(i2.date) > 0)) }
     catch { case e => Failure(e.getMessage) }
   }
   
   def allItemsIn(year:Int, month:Int):Validation[String, List[Item]] = {
-    try { Success(exec.allItemsIn(year, month)) }
+    try { Success(exec.allItemsIn(year, month).sortWith( (i1, i2) => i1.date.compareTo(i2.date) > 0)) }
     catch { case e => Failure(e.getMessage)}
   }
 
