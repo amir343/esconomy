@@ -54,7 +54,6 @@ trait ExpenseForm {
     val gridLayout = new GridLayoutW(columns = 2, rows = 5, height = "100%", width = "100%")
 
     dateInput.setResolution(DateField.RESOLUTION_DAY)
-    dateInput.setValue(new Date())
 
     val components = List(nameLbl, nameTxt, priceLbl, priceTxt, dateLbl, dateInput, categoryLbl, categoryCombo, btn)
     components foreach { com:AbstractComponent => com.setImmediate(true) }
@@ -74,6 +73,7 @@ class AddExpenseForm(val expenseView:AddExpenseView) extends ExpenseForm with Bu
   addBtn addListener this
 
   def components:GridLayout = {
+    dateInput.setValue(new Date())
     construct(addBtn)
   }
 

@@ -1,8 +1,8 @@
 package com.jayway.esconomy.service
 
-import java.io.File
 import org.apache.commons.io.FileUtils
-import collection.JavaConversions._
+import collection.JavaConverters._
+import java.io.File
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -26,12 +26,13 @@ case class ParseImportedFile(file:File) {
 
   type ItemTuple = (String, String, String)
 
-  val parsedItems = FileUtils.readLines(file, "UTF-8").foldLeft(List[ItemTuple]()) {
-    (r, c) => 
-      val tokens = c.split("\t")
+  val parsedItems = FileUtils.readLines(file, "UTF-8").asScala.toList.foldLeft(List[ItemTuple]()) {
+    (r, c) =>
+      val s = new String(c.getBytes("UTF-8"))
+      val tokens = s.split("\t")
       r ::: List((tokens.apply(0), tokens.apply(1), tokens.apply(2).replace("\"", "").replace(",", "")))
   }
-
+  
   def items = parsedItems
 
 }

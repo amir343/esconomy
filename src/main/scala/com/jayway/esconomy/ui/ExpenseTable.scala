@@ -161,7 +161,7 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
       item.getItemProperty("Id").getValue.toString,
       item.getItemProperty("Item name").getValue.toString,
       item.getItemProperty("Price").getValue.toString.toDouble,
-      getDate(item.getItemProperty("Date").getValue.asInstanceOf[String]),
+      getDate(item.getItemProperty("Date").getValue.toString),
       item.getItemProperty("Category").getValue.toString
     )
     row
