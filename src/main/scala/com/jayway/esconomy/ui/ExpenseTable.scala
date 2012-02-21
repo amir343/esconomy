@@ -49,7 +49,7 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
   val dataSource:IndexedContainer = new IndexedContainer()
 
   val categories = queries.allCategories match {
-    case Success(x) => x map { i => i.category }
+    case Success(x) => x map ( _.category )
     case Failure(x) => List()
   }
 
@@ -153,8 +153,7 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
     val row = extractFromTable(item)
     val commands = new Commands
     commands.deleteItem(row)
-
-    allItems()
+    dataSource removeItem target
   }
 
   def extractFromTable(item:VaadinItem):Item = {
