@@ -26,10 +26,9 @@ case class ParseImportedFile(file:File) {
 
   type ItemTuple = (String, String, String)
 
-  val parsedItems = FileUtils.readLines(file, "UTF-8").asScala.toList.foldLeft(List[ItemTuple]()) {
+  val parsedItems = FileUtils.readLines(file, "ISO8859_1").asScala.toList.foldLeft(List[ItemTuple]()) {
     (r, c) =>
-      val s = new String(c.getBytes("UTF-8"))
-      val tokens = s.split("\t")
+      val tokens = c.split("\t")
       r ::: List((tokens.apply(0), tokens.apply(1), tokens.apply(2).replace("\"", "").replace(",", "")))
   }
   
