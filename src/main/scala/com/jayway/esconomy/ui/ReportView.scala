@@ -3,7 +3,6 @@ package com.jayway.esconomy.ui
 import collection.JavaConversions._
 import com.jayway.esconomy.util.Utils._
 import com.vaadin.data.Property
-import wrapped.{PanelW, ComboBoxW, HorizontalLayoutW, VerticalLayoutW}
 import com.vaadin.ui.CheckBox
 import com.jayway.esconomy.dao.Queries
 import java.util.{LinkedHashSet, Calendar}
@@ -17,6 +16,8 @@ import com.invient.vaadin.charts.Color.RGB
 import com.vaadin.data.Property.{ValueChangeListener, ValueChangeEvent}
 import com.vaadin.ui.Window.Notification
 import scalaz.{Success, Failure}
+import wrapped._
+import collection.mutable
 
 
 /**
@@ -40,22 +41,46 @@ import scalaz.{Success, Failure}
 case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
 
   val queries = new Queries
-
+  val currentCategories:mutable.ListBuffer[String] = mutable.ListBuffer[String]()
   val df = new DecimalFormat("##.##");
   val mainPanel = new PanelW(caption = "Reports", width = "100%")
+  val categoryPanel = new PanelW(caption = "Categories", width = "100%")
   val mainLayout = new VerticalLayoutW()
   val periodLayout = new HorizontalLayoutW(width = "100%")
   val chartLayout = new HorizontalLayoutW(width = "100%")
+  val categoryLayout = new HorizontalLayoutW(width = "100%")
+  categoryPanel <~ categoryLayout
   val yearCombo = new ComboBoxW(caption = "Year")
   val monthCombo = new ComboBoxW(caption = "Month")
   val showYearlyChkBox = new CheckBox("Show yearly", false)
   
   def components = {
+    constructCategoryLayout()
     constructPeriodLayout()
     mainLayout.setSizeFull()
-    mainLayout <~ List(periodLayout, chartLayout)
+    mainLayout <~ List(categoryPanel, periodLayout, chartLayout)
     mainPanel <~ mainLayout
     mainPanel
+  }
+
+  def constructCategoryLayout() {
+    val cats:List[String] = queries.allCategories match {
+      case Success(x) => x map ( _.category )
+      case Failure(x) => List()
+    }
+    cats foreach ( currentCategories += _ )
+    categoryLayout <~ cats.map { c =>
+      val check = new CheckBoxW(caption = c, immediate = true, selected = true)
+      check.addListener(new ValueChangeListener {
+        def valueChange(event: ValueChangeEvent) {
+          check.getValue.asInstanceOf[Boolean] match {
+            case true  => currentCategories += check.getCaption ; categorySelectionChanged()
+            case false => currentCategories -= check.getCaption ; categorySelectionChanged()
+          }
+        }
+      })
+      check
+    }
   }
 
   def constructPeriodLayout() {
@@ -87,6 +112,12 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
 
   }
 
+  def categorySelectionChanged() {
+    valueChange(new ValueChangeEvent {
+      def getProperty: Property = null
+    })
+  }
+
   def valueChange(event:ValueChangeEvent) {
     if ( yearCombo.getValue != null && monthCombo.getValue != null ) {
       showYearlyChkBox.getValue.asInstanceOf[Boolean] match {
@@ -99,14 +130,14 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
   }
 
   def yearlyItemsGroupedByCategories() {
-    queries.yearlyItemsGroupedByCategoriesIn(yearCombo.getValue.toString.toInt) match {
+    queries.yearlyItemsGroupedByCategoriesIn(yearCombo.getValue.toString.toInt, currentCategories) match {
       case Failure(x) => mainLayout.getWindow.showNotification("Error happened: " + x, Notification.TYPE_ERROR_MESSAGE)
       case Success(x) => updateChart(x)
     }
   }
 
   def itemsGroupedByCategories() {
-    queries.itemsGroupedByCategoriesIn(yearCombo.getValue.toString.toInt, months.indexOf(monthCombo.getValue.toString).toString.toInt) match {
+    queries.itemsGroupedByCategoriesIn(yearCombo.getValue.toString.toInt, months.indexOf(monthCombo.getValue.toString).toString.toInt, currentCategories) match {
       case Failure(x) => mainLayout.getWindow.showNotification("Error happened: " + x, Notification.TYPE_ERROR_MESSAGE)
       case Success(x) => updateChart(x)
     }

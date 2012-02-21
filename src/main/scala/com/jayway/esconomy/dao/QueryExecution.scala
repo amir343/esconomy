@@ -5,6 +5,7 @@ import collection.JavaConverters._
 import java.util.Calendar
 import com.jayway.esconomy.domain.{Category, Item}
 import org.springframework.data.mongodb.core.query.{Criteria, Query}
+import collection.mutable
 
 
 /**
@@ -41,32 +42,34 @@ class QueryExecution {
 
   def itemsInCategory(category:String):List[Item] = mongoOperations.find(new Query(Criteria.where("category").is(category)),classOf[Item], itemCollection).asScala.toList
 
-  def itemsGroupedByCategoriesIn(year:Int, month:Int):List[(String, Double)] = {
+  def itemsGroupedByCategoriesIn(year:Int, month:Int, currentCategories:mutable.ListBuffer[String]):List[(String, Double)] = {
     val cal = Calendar.getInstance()
 
-    allCategories.foldLeft(List[(Category, List[Item])]()) { (r, coll) =>
-      val it:List[Item] = itemsInCategory(coll.category).filter { item =>
-        cal.setTime(item.date)
-        if (cal.get(Calendar.YEAR) == year && cal.get(Calendar.MONTH) == month) true else false
-      }.toList
-      r ::: List((coll, it))
-    }.map { tuples =>
-      (tuples._1.category, sum(tuples._2))
-    }
+    allCategories.filter( c => currentCategories.contains(c.category) )
+      .foldLeft(List[(Category, List[Item])]()) { (r, coll) =>
+        val it:List[Item] = itemsInCategory(coll.category).filter { item =>
+          cal.setTime(item.date)
+          if (cal.get(Calendar.YEAR) == year && cal.get(Calendar.MONTH) == month) true else false
+        }.toList
+        r ::: List((coll, it))
+      }.map { tuples =>
+        (tuples._1.category, sum(tuples._2))
+      }
   }
 
-  def yearlyItemsGroupedByCategoriesIn(year:Int):List[(String, Double)] = {
+  def yearlyItemsGroupedByCategoriesIn(year:Int, currentCategories:mutable.ListBuffer[String]):List[(String, Double)] = {
     val cal = Calendar.getInstance()
 
-    allCategories.foldLeft(List[(Category, List[Item])]()) { (r, coll) =>
-      val it:List[Item] = itemsInCategory(coll.category).filter { item =>
-        cal.setTime(item.date)
-        if (cal.get(Calendar.YEAR) == year) true else false
-      }.toList
-      r ::: List((coll, it))
-    }.map { tuples =>
-      (tuples._1.category, sum(tuples._2))
-    }
+    allCategories.filter( c => currentCategories.contains(c.category) )
+      .foldLeft(List[(Category, List[Item])]()) { (r, coll) =>
+        val it:List[Item] = itemsInCategory(coll.category).filter { item =>
+          cal.setTime(item.date)
+          if (cal.get(Calendar.YEAR) == year) true else false
+        }.toList
+        r ::: List((coll, it))
+      }.map { tuples =>
+        (tuples._1.category, sum(tuples._2))
+      }
   }
 
   private def sum(items:List[Item]):Double = {

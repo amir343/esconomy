@@ -85,6 +85,16 @@ class ComboBoxW(caption:String = null,
 
 }
 
+class CheckBoxW(caption:String = null,
+                immediate:Boolean = true,
+                selected:Boolean = false) extends CheckBox {
+  if (caption != null) setCaption(caption)
+  setImmediate(immediate)
+  setValue(selected)
+}
+
+
+
 class WindowW(caption:String = null,
               width:String = null,
               height:String = null,

@@ -2,6 +2,7 @@ package com.jayway.esconomy.dao
 
 import com.jayway.esconomy.domain.{Category, Item}
 import scalaz._
+import collection.mutable
 
 
 /**
@@ -40,13 +41,13 @@ class Queries {
     catch { case e => Failure(e.getMessage)}
   }
   
-  def itemsGroupedByCategoriesIn(year:Int, month:Int):Validation[String, List[(String, Double)]] = {
-    try { Success(exec.itemsGroupedByCategoriesIn(year, month)) }
+  def itemsGroupedByCategoriesIn(year:Int, month:Int, currentCategories:mutable.ListBuffer[String]):Validation[String, List[(String, Double)]] = {
+    try { Success(exec.itemsGroupedByCategoriesIn(year, month, currentCategories)) }
     catch { case e => Failure(e.getMessage)}
   }
 
-  def yearlyItemsGroupedByCategoriesIn(year:Int):Validation[String, List[(String, Double)]] = {
-    try { Success(exec.yearlyItemsGroupedByCategoriesIn(year)) }
+  def yearlyItemsGroupedByCategoriesIn(year:Int, currentCategories:mutable.ListBuffer[String]):Validation[String, List[(String, Double)]] = {
+    try { Success(exec.yearlyItemsGroupedByCategoriesIn(year, currentCategories)) }
     catch { case e => Failure(e.getMessage)}
   }
 

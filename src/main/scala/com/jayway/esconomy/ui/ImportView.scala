@@ -49,7 +49,7 @@ case class ImportView(dashboard:Main) extends Receiver {
       upload.getWindow.showNotification("Error happened: " + x, Notification.TYPE_ERROR_MESSAGE)
       List()
     }
-    case Success(x) => x.map { x => x.category }
+    case Success(x) => x.map ( _.category )
   }
   var file:File = _
   val upload = new Upload(null, this)
