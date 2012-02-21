@@ -13,6 +13,7 @@ import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
 import wrapped.{WindowW, VerticalLayoutW, PanelW, ComboBoxW}
 import com.jayway.esconomy.util.Utils._
 import scalaz.{Failure, Success}
+import java.lang.{Double => JDouble }
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -56,8 +57,8 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
         ("Item name", classOf[String]),
         ("Category", classOf[ComboBoxW]),
         ("Date", classOf[String]),
-        ("Price", classOf[String]) )
-    .foreach { x => dataSource.addContainerProperty(x._1, x._2, "")  }
+        ("Price", classOf[JDouble]) )
+    .foreach { x => dataSource.addContainerProperty(x._1, x._2, null)  }
 
   allItems()
 
@@ -130,7 +131,7 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
     item.getItemProperty("Item name").setValue(record.itemName)
     item.getItemProperty("Category").setValue(cats)
     item.getItemProperty("Date").setValue(formatDate(record.date))
-    item.getItemProperty("Price").setValue(record.price)
+    item.getItemProperty("Price").setValue(record.price.toDouble)
   }
 
   def editTableItem(target:AnyRef) {
