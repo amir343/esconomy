@@ -3,7 +3,6 @@ package com.jayway.esconomy.ui
 import collection.JavaConversions._
 import com.jayway.esconomy.util.Utils._
 import com.vaadin.data.Property
-import com.jayway.esconomy.dao.Queries
 import java.util.{LinkedHashSet, Calendar}
 import com.invient.vaadin.charts.{InvientCharts, InvientChartsConfig}
 import java.text.DecimalFormat
@@ -19,6 +18,7 @@ import collection.mutable
 import com.invient.vaadin.charts.InvientCharts._
 import com.vaadin.ui.{Button, CheckBox}
 import com.vaadin.ui.Button.ClickListener
+import com.jayway.esconomy.dao.{QueryChannelImpl}
 
 
 /**
@@ -41,7 +41,8 @@ import com.vaadin.ui.Button.ClickListener
 
 case class ReportView(dashboard:Main) extends View with Property.ValueChangeListener {
 
-  val queries = new Queries
+  val queries = new QueryChannelImpl
+
   val currentCategories:mutable.ListBuffer[String] = mutable.ListBuffer[String]()
   val df = new DecimalFormat("##.##");
   val mainPanel = new PanelW(caption = "Reports", width = "100%")

@@ -8,7 +8,7 @@ import collection.JavaConversions._
 import com.jayway.esconomy.domain.Category
 import com.vaadin.ui.Button.ClickListener
 import com.vaadin.ui._
-import com.jayway.esconomy.dao.{Commands, Queries}
+import com.jayway.esconomy.dao.{Commands, QueryChannelImpl}
 import com.vaadin.ui.Window.Notification
 import com.vaadin.event.ShortcutAction.KeyCode
 import com.jayway.esconomy.service.ComputeService
@@ -37,7 +37,7 @@ class CategoryTable(tree:Tree) extends Table {
   val editAction = new Action("Edit")
   val removeAction = new Action("Remove")
 
-  val queries = new Queries
+  val queries = new QueryChannelImpl
 
   this setPageLength 10
   this setWidth "50%"

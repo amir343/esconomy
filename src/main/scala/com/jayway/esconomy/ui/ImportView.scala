@@ -8,8 +8,7 @@ import com.vaadin.ui.{Table, Button, Upload}
 import java.util.UUID
 import wrapped._
 import collection.JavaConversions._
-import com.jayway.esconomy.dao.{Commands, Queries}
-import java.text.SimpleDateFormat
+import com.jayway.esconomy.dao.{Commands, QueryChannelImpl}
 import com.jayway.esconomy.domain.Item
 import com.vaadin.ui.Window.Notification
 import com.jayway.esconomy.util.Utils._
@@ -43,7 +42,7 @@ case class ImportView(dashboard:Main) extends Receiver {
   val mainLayout = new VerticalLayoutW()
   val mainPanel = new PanelW(caption = "Import", width = "100%", height = "100%")
 
-  val queries = new Queries
+  val queries = new QueryChannelImpl
   lazy val categories = queries.allCategories match {
     case Failure(x)  => {
       upload.getWindow.showNotification("Error happened: " + x, Notification.TYPE_ERROR_MESSAGE)

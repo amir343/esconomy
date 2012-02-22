@@ -3,6 +3,7 @@ package com.jayway.esconomy.dao
 import com.jayway.esconomy.domain.{Category, Item}
 import scalaz._
 import collection.mutable
+import org.scala_tools.subcut.inject.{Injectable, BindingModule}
 
 
 /**
@@ -22,36 +23,36 @@ import collection.mutable
  *
  * @author Amir Moulavi
  */
-class Queries {
+class QueryChannelImpl extends QueryChannel {
 
-  val exec = new QueryExecution
+  val exec = new QueryExecutionImpl
 
-  def allItems:Validation[String, List[Item]] = {
+  override def allItems:Validation[String, List[Item]] = {
     try { Success(exec.findAll.sortWith( (i1, i2) => i1.date.compareTo(i2.date) > 0)) }
     catch { case e => Failure(e.getMessage) }
   }
 
-  def allItemsInCategory(category:String):Validation[String, List[Item]] = {
+  override def allItemsInCategory(category:String):Validation[String, List[Item]] = {
     try { Success(exec.findAllInCategory(category).sortWith( (i1, i2) => i1.date.compareTo(i2.date) > 0)) }
     catch { case e => Failure(e.getMessage) }
   }
-  
-  def allItemsIn(year:Int, month:Int):Validation[String, List[Item]] = {
+
+  override def allItemsIn(year:Int, month:Int):Validation[String, List[Item]] = {
     try { Success(exec.allItemsIn(year, month).sortWith( (i1, i2) => i1.date.compareTo(i2.date) > 0)) }
     catch { case e => Failure(e.getMessage)}
   }
 
-  def allCategories:Validation[String, List[Category]] = {
+  override def allCategories:Validation[String, List[Category]] = {
     try { Success(exec.allCategories) }
     catch { case e => Failure(e.getMessage)}
   }
-  
-  def itemsGroupedByCategoriesIn(year:Int, month:Int, currentCategories:mutable.ListBuffer[String]):Validation[String, List[(String, Double)]] = {
+
+  override def itemsGroupedByCategoriesIn(year:Int, month:Int, currentCategories:mutable.ListBuffer[String]):Validation[String, List[(String, Double)]] = {
     try { Success(exec.itemsGroupedByCategoriesIn(year, month, currentCategories)) }
     catch { case e => Failure(e.getMessage)}
   }
 
-  def yearlyItemsGroupedByCategoriesIn(year:Int, currentCategories:mutable.ListBuffer[String]):Validation[String, List[(String, Double)]] = {
+  override def yearlyItemsGroupedByCategoriesIn(year:Int, currentCategories:mutable.ListBuffer[String]):Validation[String, List[(String, Double)]] = {
     try { Success(exec.yearlyItemsGroupedByCategoriesIn(year, currentCategories)) }
     catch { case e => Failure(e.getMessage)}
   }

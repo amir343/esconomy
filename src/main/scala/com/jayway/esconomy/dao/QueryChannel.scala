@@ -1,7 +1,6 @@
 package com.jayway.esconomy.dao
 
-import org.springframework.data.mongodb.core.query.{Criteria, Query}
-import java.util.Calendar
+import scalaz.Validation
 import com.jayway.esconomy.domain.{Category, Item}
 import collection.mutable
 
@@ -23,20 +22,18 @@ import collection.mutable
  * @author Amir Moulavi
  */
 
-trait QueryExecution {
+trait QueryChannel {
 
-  def findAll:List[Item]
+  def allItems:Validation[String, List[Item]]
 
-  def findAllInCategory(category:String):List[Item]
+  def allItemsInCategory(category:String):Validation[String, List[Item]]
 
-  def allItemsIn(year:Int, month:Int):List[Item]
+  def allItemsIn(year:Int, month:Int):Validation[String, List[Item]]
 
-  def allCategories:List[Category]
+  def allCategories:Validation[String, List[Category]]
 
-  def itemsInCategory(category:String):List[Item]
+  def itemsGroupedByCategoriesIn(year:Int, month:Int, currentCategories:mutable.ListBuffer[String]):Validation[String, List[(String, Double)]]
 
-  def itemsGroupedByCategoriesIn(year:Int, month:Int, currentCategories:mutable.ListBuffer[String]):List[(String, Double)]
-
-  def yearlyItemsGroupedByCategoriesIn(year:Int, currentCategories:mutable.ListBuffer[String]):List[(String, Double)]
+  def yearlyItemsGroupedByCategoriesIn(year:Int, currentCategories:mutable.ListBuffer[String]):Validation[String, List[(String, Double)]]
 
 }

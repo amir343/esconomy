@@ -4,7 +4,7 @@ import java.util.Date
 import com.jayway.esconomy.domain.Item
 import com.vaadin.ui.Window.Notification
 import com.vaadin.ui.AbstractSelect.Filtering
-import com.jayway.esconomy.dao.{Queries, Commands}
+import com.jayway.esconomy.dao.{QueryChannelImpl, Commands}
 import collection.JavaConversions._
 import com.vaadin.ui._
 import com.vaadin.event.ShortcutAction.KeyCode
@@ -46,7 +46,7 @@ trait ExpenseForm {
   categoryCombo setNullSelectionAllowed false
 
   def construct(btn:Button) = {
-    val queries = new Queries
+    val queries = new QueryChannelImpl
     queries.allCategories match {
       case Failure(x) =>
       case Success(x) => x.foreach { c => categoryCombo.addItem(c.category) }

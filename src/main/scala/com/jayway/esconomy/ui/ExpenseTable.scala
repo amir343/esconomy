@@ -4,7 +4,6 @@ import com.vaadin.data.util.IndexedContainer
 import com.jayway.esconomy.domain.Item
 import com.vaadin.event.Action
 import com.vaadin.event.Action.Handler
-import com.jayway.esconomy.dao.{Commands, Queries}
 import collection.JavaConversions._
 import com.vaadin.ui.Window.Notification
 import com.vaadin.data.{Item => VaadinItem}
@@ -14,6 +13,7 @@ import com.jayway.esconomy.util.Utils._
 import scalaz.{Failure, Success}
 import java.lang.{Double => JDouble }
 import com.vaadin.ui.{Component, Tree, Table}
+import com.jayway.esconomy.dao.{Commands, QueryChannelImpl}
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -34,12 +34,13 @@ import com.vaadin.ui.{Component, Tree, Table}
  */
 class ExpenseTable(selectedCategory:String, view:View, component:Component) extends Table {
 
+  val queries = new QueryChannelImpl
+
   val editAction = new Action("Edit")
   val removeAction = new Action("Remove")
+
   val self = this
 
-  val queries = new Queries
-  
   this setPageLength 10
   this setWidth "100%"
   this setSelectable true
