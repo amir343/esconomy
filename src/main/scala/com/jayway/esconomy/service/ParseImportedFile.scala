@@ -3,6 +3,8 @@ package com.jayway.esconomy.service
 import org.apache.commons.io.FileUtils
 import collection.JavaConverters._
 import java.io.File
+import scalaz._
+import Scalaz._
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -26,11 +28,14 @@ case class ParseImportedFile(file:File) {
 
   type ItemTuple = (String, String, String)
 
-  val parsedItems = FileUtils.readLines(file, "ISO8859_1").asScala.toList.foldLeft(List[ItemTuple]()) {
-    (r, c) =>
-      val tokens = c.split("\t")
-      r ::: List((tokens.apply(0), tokens.apply(1), tokens.apply(2).replace("\"", "").replace(",", "")))
-  }
+  val parsedItems:Validation[String, List[ItemTuple]] =
+    try {
+      FileUtils.readLines(file, "ISO8859_1").asScala.toList.foldLeft(List[ItemTuple]()) {
+      (r, c) =>
+        val tokens = c.split("\t")
+        r ::: List((tokens.apply(0), tokens.apply(1), tokens.apply(2).replace("\"", "").replace(",", "")))
+      }.success
+    } catch { case e:Exception => "Could not parse the file: %s".format(e.getLocalizedMessage).fail }
   
   def items = parsedItems
 

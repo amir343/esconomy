@@ -94,7 +94,10 @@ case class ImportView(dashboard:Main) extends Receiver {
       def uploadFinished(event: FinishedEvent) {
         progressIndicator.setVisible(false)
         upload.setVisible(true)
-        updateTable(ParseImportedFile(file).items)
+        ParseImportedFile(file).items match {
+          case Success(x) => updateTable(x)
+          case Failure(x) => upload.getWindow.showNotification(x, Notification.TYPE_ERROR_MESSAGE)
+        }
       }
     })
 
@@ -125,7 +128,6 @@ case class ImportView(dashboard:Main) extends Receiver {
         }
       }
     }}
-
 
     var itemIds = List[String]()
 

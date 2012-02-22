@@ -45,15 +45,13 @@ case class ReportView(dashboard:Main) extends View with Property.ValueChangeList
   val currentCategories:mutable.ListBuffer[String] = mutable.ListBuffer[String]()
   val df = new DecimalFormat("##.##");
   val mainPanel = new PanelW(caption = "Reports", width = "100%")
-  val categoryPanel = new PanelW(caption = "Categories", width = "100%")
-  val periodPanel = new PanelW(caption = "Period Configuration", width = "100%")
+  val categoryPanel = new PanelW(caption = "Categories and Period Configurations", width = "100%")
   val mainLayout = new VerticalLayoutW()
   val expenseTableLayout = new VerticalLayoutW()
   val periodLayout = new HorizontalLayoutW(width = "100%")
   val chartLayout = new HorizontalLayoutW(width = "100%")
   val categoryLayout = new HorizontalLayoutW(width = "100%")
-  categoryPanel <~ categoryLayout
-  periodPanel <~ periodLayout
+  categoryPanel <~ List(categoryLayout, periodLayout)
   val yearCombo = new ComboBoxW(caption = "Year")
   val monthCombo = new ComboBoxW(caption = "Month")
   val showYearlyChkBox = new CheckBox("Show yearly", false)
@@ -73,7 +71,7 @@ case class ReportView(dashboard:Main) extends View with Property.ValueChangeList
     constructCategoryLayout()
     constructPeriodLayout()
     mainLayout.setSizeFull()
-    mainLayout <~ List(categoryPanel, periodPanel, chartLayout, expenseTableLayout)
+    mainLayout <~ List(categoryPanel, chartLayout, expenseTableLayout)
     mainPanel <~ mainLayout
     mainPanel
   }
@@ -88,6 +86,7 @@ case class ReportView(dashboard:Main) extends View with Property.ValueChangeList
       val check = new CheckBoxW(caption = c, immediate = true, selected = true)
       check.addListener(new ValueChangeListener {
         def valueChange(event: ValueChangeEvent) {
+          expenseTableLayout removeAllComponents()
           check.getValue.asInstanceOf[Boolean] match {
             case true  => currentCategories += check.getCaption ; updateView()
             case false => currentCategories -= check.getCaption ; updateView()
