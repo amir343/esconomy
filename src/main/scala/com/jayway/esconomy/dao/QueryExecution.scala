@@ -30,6 +30,10 @@ class QueryExecution {
 
   def findAll:List[Item] = mongoOperations.findAll(classOf[Item], itemCollection).asScala.toList
 
+  def findAllInCategory(category:String):List[Item] = {
+    mongoOperations.find(new Query(Criteria.where("category").is(category)), classOf[Item], itemCollection).asScala.toList
+  }
+
   def allItemsIn(year:Int, month:Int):List[Item] = {
     val cal = Calendar.getInstance()
     mongoOperations.findAll(classOf[Item], itemCollection).asScala.toList.filter { x =>

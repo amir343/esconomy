@@ -30,6 +30,11 @@ class Queries {
     try { Success(exec.findAll.sortWith( (i1, i2) => i1.date.compareTo(i2.date) > 0)) }
     catch { case e => Failure(e.getMessage) }
   }
+
+  def allItemsInCategory(category:String):Validation[String, List[Item]] = {
+    try { Success(exec.findAllInCategory(category).sortWith( (i1, i2) => i1.date.compareTo(i2.date) > 0)) }
+    catch { case e => Failure(e.getMessage) }
+  }
   
   def allItemsIn(year:Int, month:Int):Validation[String, List[Item]] = {
     try { Success(exec.allItemsIn(year, month).sortWith( (i1, i2) => i1.date.compareTo(i2.date) > 0)) }

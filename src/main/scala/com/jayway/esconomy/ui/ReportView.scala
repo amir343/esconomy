@@ -3,11 +3,9 @@ package com.jayway.esconomy.ui
 import collection.JavaConversions._
 import com.jayway.esconomy.util.Utils._
 import com.vaadin.data.Property
-import com.vaadin.ui.CheckBox
 import com.jayway.esconomy.dao.Queries
 import java.util.{LinkedHashSet, Calendar}
 import com.invient.vaadin.charts.{InvientCharts, InvientChartsConfig}
-import com.invient.vaadin.charts.InvientCharts.{DecimalPoint, XYSeries, SeriesType}
 import java.text.DecimalFormat
 import com.invient.vaadin.charts.InvientChartsConfig.GeneralChartConfig.Margin
 import com.invient.vaadin.charts.InvientChartsConfig._
@@ -18,6 +16,9 @@ import com.vaadin.ui.Window.Notification
 import scalaz.{Success, Failure}
 import wrapped._
 import collection.mutable
+import com.invient.vaadin.charts.InvientCharts._
+import com.vaadin.ui.{Button, CheckBox}
+import com.vaadin.ui.Button.ClickListener
 
 
 /**
@@ -38,27 +39,41 @@ import collection.mutable
  * @author Amir Moulavi
  */
 
-case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
+case class ReportView(dashboard:Main) extends View with Property.ValueChangeListener {
 
   val queries = new Queries
   val currentCategories:mutable.ListBuffer[String] = mutable.ListBuffer[String]()
   val df = new DecimalFormat("##.##");
   val mainPanel = new PanelW(caption = "Reports", width = "100%")
   val categoryPanel = new PanelW(caption = "Categories", width = "100%")
+  val periodPanel = new PanelW(caption = "Period Configuration", width = "100%")
   val mainLayout = new VerticalLayoutW()
+  val expenseTableLayout = new VerticalLayoutW()
   val periodLayout = new HorizontalLayoutW(width = "100%")
   val chartLayout = new HorizontalLayoutW(width = "100%")
   val categoryLayout = new HorizontalLayoutW(width = "100%")
   categoryPanel <~ categoryLayout
+  periodPanel <~ periodLayout
   val yearCombo = new ComboBoxW(caption = "Year")
   val monthCombo = new ComboBoxW(caption = "Month")
   val showYearlyChkBox = new CheckBox("Show yearly", false)
-  
+  val showItemsBtn = new Button()
+  var selectedPieChartCategory:String = _
+  val self = this
+
+  showItemsBtn.addListener(new ClickListener {
+    def buttonClick(event: Button#ClickEvent) {
+      val expenseTable = new ExpenseTable(selectedPieChartCategory, self, showItemsBtn)
+      expenseTableLayout removeAllComponents()
+      expenseTableLayout <~ expenseTable
+    }
+  })
+
   def components = {
     constructCategoryLayout()
     constructPeriodLayout()
     mainLayout.setSizeFull()
-    mainLayout <~ List(categoryPanel, periodLayout, chartLayout)
+    mainLayout <~ List(categoryPanel, periodPanel, chartLayout, expenseTableLayout)
     mainPanel <~ mainLayout
     mainPanel
   }
@@ -74,8 +89,8 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
       check.addListener(new ValueChangeListener {
         def valueChange(event: ValueChangeEvent) {
           check.getValue.asInstanceOf[Boolean] match {
-            case true  => currentCategories += check.getCaption ; categorySelectionChanged()
-            case false => currentCategories -= check.getCaption ; categorySelectionChanged()
+            case true  => currentCategories += check.getCaption ; updateView()
+            case false => currentCategories -= check.getCaption ; updateView()
           }
         }
       })
@@ -112,7 +127,7 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
 
   }
 
-  def categorySelectionChanged() {
+  def updateView() {
     valueChange(new ValueChangeEvent {
       def getProperty: Property = null
     })
@@ -143,7 +158,7 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
     }
   }
 
-  def updateChart(list:List[(String, Double)]) = {
+  def updateChart(list:List[(String, Double)]) {
     val totalExpense = list.foldLeft(0.0)( (r,c) => r + c._2)
     val bChart = barChart(list)
     val chart = pieChart (list.map { x => (x._1, if (x._2 != 0.0) df.format(100 * x._2/totalExpense).toDouble else x._2)})
@@ -151,7 +166,10 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
     chartLayout <~ List(chart,bChart)
   }
 
-  def pieChart(list:List[(String, Double)]) = {
+  def pieChart(list:List[(String, Double)]):VerticalLayoutW = {
+    val verticalLayout = new VerticalLayoutW()
+    showItemsBtn.setVisible(false)
+
     val chartConfig = new InvientChartsConfig()
     chartConfig.getGeneralChartConfig.setType(SeriesType.PIE)
 
@@ -183,10 +201,19 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
     chart.setHeight("410px")
     chart.setWidth("400px")
     chart.setImmediate(true)
-    chart
+
+    chart.addListener(new PointSelectListener {
+      def pointSelected(p1: InvientCharts#PointSelectEvent) {
+        selectedPieChartCategory = p1.getPoint.getName
+        showItemsBtn.setCaption("Show '" + p1.getPoint.getName + "' Items")
+        showItemsBtn.setVisible(true)
+      }
+    })
+    verticalLayout <~ List(chart, showItemsBtn)
+    verticalLayout
   }
   
-  def barChart(list:List[(String, Double)]) = {
+  def barChart(list:List[(String, Double)]):InvientCharts = {
     val chartConfig = new InvientChartsConfig()
     chartConfig.getGeneralChartConfig.setType(SeriesType.COLUMN)
     chartConfig.getGeneralChartConfig.setMargin(new Margin())
@@ -242,6 +269,10 @@ case class ReportView(dashboard:Main) extends Property.ValueChangeListener {
     chart    
   }
 
-
+  override def decideTheView() {
+    expenseTableLayout removeAllComponents()
+    expenseTableLayout <~ new ExpenseTable(selectedPieChartCategory, this, showItemsBtn)
+    updateView()
+  }
 
 }

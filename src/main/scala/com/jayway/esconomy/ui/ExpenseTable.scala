@@ -6,7 +6,6 @@ import com.vaadin.event.Action
 import com.vaadin.event.Action.Handler
 import com.jayway.esconomy.dao.{Commands, Queries}
 import collection.JavaConversions._
-import com.vaadin.ui.{Tree, Table}
 import com.vaadin.ui.Window.Notification
 import com.vaadin.data.{Item => VaadinItem}
 import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
@@ -14,6 +13,7 @@ import wrapped.{WindowW, VerticalLayoutW, PanelW, ComboBoxW}
 import com.jayway.esconomy.util.Utils._
 import scalaz.{Failure, Success}
 import java.lang.{Double => JDouble }
+import com.vaadin.ui.{Component, Tree, Table}
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -32,7 +32,7 @@ import java.lang.{Double => JDouble }
  *
  * @author Amir Moulavi
  */
-class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
+class ExpenseTable(selectedCategory:String, view:View, component:Component) extends Table {
 
   val editAction = new Action("Edit")
   val removeAction = new Action("Remove")
@@ -74,19 +74,31 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
   }}
 
   def allItems() {
-      self removeAllItems()
-      dataSource removeAllItems()
-      var totalSum = 0.0
+    self removeAllItems()
+    dataSource removeAllItems()
+    var totalSum = 0.0
 
-      queries.allItems match {
-        case Failure(x) => tree.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
-        case Success(x) => {
-          x.foreach { i =>
-            addToContainer(i, dataSource)
-            totalSum += i.price
-          }
-        }
-      }
+
+    selectedCategory match {
+      case null => queries.allItems match {
+                      case Failure(x) => component.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
+                      case Success(x) => {
+                        x.foreach { i =>
+                          addToContainer(i, dataSource)
+                          totalSum += i.price
+                        }
+                      }
+                   }
+      case _    => queries.allItemsInCategory(selectedCategory) match {
+                      case Failure(x) => component.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
+                      case Success(x) => {
+                        x.foreach { i =>
+                          addToContainer(i, dataSource)
+                          totalSum += i.price
+                        }
+                      }
+                    }
+    }
 
       self setColumnFooter ("Item name", "Total expenses")
       self setColumnFooter ("Price", totalSum + " SEK")
@@ -100,7 +112,7 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
       var totalSum = 0.0
 
       queries.allItemsIn(year.toInt, month.toInt) match {
-        case Failure(x) =>  tree.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
+        case Failure(x) =>  component.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
         case Success(x) => {
           x.foreach { i =>
             addToContainer(i, dataSource)
@@ -138,7 +150,7 @@ class ExpenseTable(addExpenseView:AddExpenseView, tree:Tree) extends Table {
     val editWindow = new WindowW(caption = "Edit Item", height = "380px", width = "380px")
     val item = this getItem target
     val row = extractFromTable(item)
-    val editExpenseForm = new EditExpenseForm(addExpenseView, row, editWindow)
+    val editExpenseForm = new EditExpenseForm(view, row, editWindow)
     val verticalLayout = new  VerticalLayoutW
     editWindow.addComponent(verticalLayout)
     val panel = new PanelW("Edit")

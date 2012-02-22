@@ -99,7 +99,7 @@ class AddExpenseForm(val expenseView:AddExpenseView) extends ExpenseForm with Bu
 
 }
 
-class EditExpenseForm(val expenseView:AddExpenseView, val item:Item, val window:Window) extends ExpenseForm with Button.ClickListener {
+class EditExpenseForm(val view:View, val item:Item, val window:Window) extends ExpenseForm with Button.ClickListener {
 
   val editBtn = new Button("Edit")
   editBtn setClickShortcut KeyCode.ENTER
@@ -124,7 +124,7 @@ class EditExpenseForm(val expenseView:AddExpenseView, val item:Item, val window:
       dateInput.getValue.asInstanceOf[Date],
       categoryCombo.getValue.toString))
 
-    expenseView decideTheView()
+    view decideTheView()
     (window.getParent).removeWindow(window)
   }
 

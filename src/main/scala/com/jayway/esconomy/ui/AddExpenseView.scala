@@ -25,10 +25,10 @@ import com.jayway.esconomy.util.Utils._
  * @author Amir Moulavi
  */
 
-case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
+case class AddExpenseView(dashboard:Main) extends View with Property.ValueChangeListener {
 
   val addExpensePanel = new PanelW(caption = "Add an expense", width = "50%", height = "60%")
-  val currentExpenseTable = new ExpenseTable(this, dashboard.tree)
+  val currentExpenseTable = new ExpenseTable(null, this, dashboard.tree)
   val currentExpensesPanel = new PanelW(caption = "Current expenses")
 
   val label = new Label("Period")
@@ -100,7 +100,7 @@ case class AddExpenseView(dashboard:Main) extends Property.ValueChangeListener {
     }
   }
 
-  def decideTheView() {
+  override def decideTheView() {
     showAllChkBox.getValue.asInstanceOf[Boolean] match {
       case true  => currentExpenseTable.allItems()
       case false => currentExpenseTable.allItemsIn(yearCombo.getValue.toString, months.indexOf(monthCombo.getValue.toString).toString)
