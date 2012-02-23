@@ -43,6 +43,8 @@ case class ImportView(dashboard:Main) extends Receiver {
   val mainPanel = new PanelW(caption = "Import", width = "100%", height = "100%")
   val label = new Label("Please upload your expense tab delimited file contaning {date, item name, price}")
 
+  var itemIds = List[String]()    
+
   val queries = new QueryChannelImpl
   lazy val categories = queries.allCategories match {
     case Failure(x)  => {
@@ -124,12 +126,10 @@ case class ImportView(dashboard:Main) extends Receiver {
 
       def handleAction(action: Action, sender: AnyRef, target: AnyRef) {
         action match {
-          case `removeAction` => table.removeItem(target)
+          case `removeAction` => table.removeItem(target); itemIds = itemIds.filterNot( _ == target.asInstanceOf[String] )
         }
       }
     }}
-
-    var itemIds = List[String]()
 
     val estimatedList = CategoryGuessService().estimateForItems(list)
 
@@ -150,15 +150,17 @@ case class ImportView(dashboard:Main) extends Receiver {
         val commands = new Commands
         itemIds.foreach { id =>
           val item = table.getItem(id)
-          val price = item.getItemProperty("Price").getValue.asInstanceOf[String].toDouble
-          if ( price < 0.0 ) {
-            val date = getDate(item.getItemProperty("Date").getValue.asInstanceOf[String])
-            val itName = item.getItemProperty("ItemName").getValue.asInstanceOf[String]
-            val category = item.getItemProperty("Category").getValue.asInstanceOf[ComboBoxW].getValue match {
-              case null => UNKNOWN_CATEGORY
-              case a:String => a
+          if (item != null) {
+            val price = item.getItemProperty("Price").getValue.asInstanceOf[String].toDouble
+            if ( price < 0.0 ) {
+              val date = getDate(item.getItemProperty("Date").getValue.asInstanceOf[String])
+              val itName = item.getItemProperty("ItemName").getValue.asInstanceOf[String]
+              val category = item.getItemProperty("Category").getValue.asInstanceOf[ComboBoxW].getValue match {
+                case null => UNKNOWN_CATEGORY
+                case a:String => a
+              }
+              commands.saveItem(Item(id, itName, -1*price, date, category))
             }
-            commands.saveItem(Item(id, itName, -1*price, date, category))
           }
         }
         upload.getWindow.showNotification("Items saved!", Notification.TYPE_HUMANIZED_MESSAGE)
