@@ -31,7 +31,7 @@ case class AddExpenseView(dashboard:Main) extends View with Property.ValueChange
   val currentExpenseTable = new ExpenseTable(null, this, dashboard.tree)
   val currentExpensesPanel = new PanelW(caption = "Current expenses")
 
-  val label = new Label("Period")
+  val label = new Label("Period: ")
   val yearCombo = new ComboBoxW(caption = "Year")
   val monthCombo = new ComboBoxW(caption = "Month")
   val showAllChkBox = new CheckBox("Show all items", false)

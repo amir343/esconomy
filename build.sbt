@@ -14,9 +14,11 @@ seq((webSettings ++ vaadinSettings ++ Seq(
   vaadinVersion := "6.7.4"
 )) :_*)
 
-resolvers += "Spring Maven MILESTONE Repository" at "http://maven.springframework.org/milestone"
-
-resolvers += "Vaadin Addons" at "http://maven.vaadin.com/vaadin-addons"
+resolvers ++= Seq(
+                  "Scala Tools" at "http://scala-tools.org/repo-releases/",
+                  "Spring Maven MILESTONE Repository" at "http://maven.springframework.org/milestone",
+                  "Vaadin Addons" at "http://maven.vaadin.com/vaadin-addons"
+                  )
 
 libraryDependencies ++= Seq(
   "com.vaadin" % "vaadin" % "6.7.4",
@@ -31,5 +33,8 @@ libraryDependencies ++= Seq(
   "cglib" % "cglib" % "2.2",
   "org.mortbay.jetty" % "jetty" % "6.1.22" % "container",
   "commons-io" % "commons-io" % "2.1",
-  "org.scalaz" %% "scalaz-core" % "6.0.4"
+  "org.scalaz" %% "scalaz-core" % "6.0.4",
+  "org.specs2" %% "specs2" % "1.7.1" % "test",
+  "org.specs2" %% "specs2-scalaz-core" % "6.0.1" % "test",
+  "junit" % "junit" % "4.7" % "test"
 )
