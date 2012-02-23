@@ -37,7 +37,7 @@ import com.vaadin.ui.{Label, Table, Button, Upload}
 
 case class ImportView(dashboard:Main) extends Receiver {
 
-  val uploadLayout = new HorizontalLayoutW()
+  val uploadLayout = new VerticalLayoutW()
   val tableLayout = new VerticalLayoutW()
   val mainLayout = new VerticalLayoutW()
   val mainPanel = new PanelW(caption = "Import", width = "100%", height = "100%")
