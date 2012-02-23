@@ -1,10 +1,7 @@
 package com.jayway.esconomy.service
 
-import org.apache.commons.io.FileUtils
-import collection.JavaConverters._
-import java.io.File
-import scalaz._
-import Scalaz._
+import com.jayway.esconomy.dao.QueryChannelImpl
+import scalaz.{Failure, Success}
 import com.jayway.esconomy.util.Utils.ItemTuple
 
 /**
@@ -25,17 +22,26 @@ import com.jayway.esconomy.util.Utils.ItemTuple
  * @author Amir Moulavi
  */
 
-case class ParseImportedFile(file:File) {
-
-  val parsedItems:Validation[String, List[ItemTuple]] =
-    try {
-      FileUtils.readLines(file, "ISO8859_1").asScala.toList.foldLeft(List[ItemTuple]()) {
-      (r, c) =>
-        val tokens = c.split("\t")
-        r ::: List((tokens.apply(0), tokens.apply(1), tokens.apply(2).replace("\"", "").replace(",", "")))
-      }.success
-    } catch { case e:Exception => "Could not parse the file: %s".format(e.getLocalizedMessage).fail }
+case class CategoryGuessService() {
   
-  def items = parsedItems
+  val query = new QueryChannelImpl
+  
+  lazy val items = query.allItems match {
+    case Success(x) => x
+    case Failure(x) => List()
+  }
+  
+  def estimateForItems(list:List[ItemTuple]):List[(ItemTuple, String)] = {
+    list map ( findTheClosest )
+  }
+
+  def findTheClosest(item:ItemTuple):(ItemTuple, String) = {
+    items.sortWith { (i1, i2) => 
+      SimilarStringAlgorithm.similarity(item._2, i1.itemName) -  SimilarStringAlgorithm.similarity(item._2, i2.itemName) > 0 
+    }.headOption match {
+      case Some(x) => (item, x.category)
+      case None    => (item, null)
+    }
+  }
 
 }

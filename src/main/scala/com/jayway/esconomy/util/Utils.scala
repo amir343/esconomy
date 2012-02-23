@@ -23,6 +23,8 @@ import java.util.{Date, Calendar}
 
 object Utils {
 
+  type ItemTuple = (String, String, String)
+  
   val df = new SimpleDateFormat("yyyy-MM-dd")
   val cal = Calendar.getInstance()
   val months = List("January", "Feburary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")

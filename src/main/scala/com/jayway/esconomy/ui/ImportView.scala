@@ -3,7 +3,6 @@ package com.jayway.esconomy.ui
 import com.vaadin.ui.Button.ClickListener
 import com.vaadin.ui.Upload._
 import java.io.{FileOutputStream, File, OutputStream}
-import com.jayway.esconomy.service.ParseImportedFile
 import java.util.UUID
 import wrapped._
 import collection.JavaConversions._
@@ -15,7 +14,8 @@ import com.vaadin.event.Action
 import com.vaadin.event.Action.Handler
 import scalaz.{Success, Failure}
 import com.vaadin.ui.{Label, Table, Button, Upload}
-
+import com.jayway.esconomy.util.Utils.ItemTuple
+import com.jayway.esconomy.service.{CategoryGuessService, ParseImportedFile}
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -110,7 +110,7 @@ case class ImportView(dashboard:Main) extends Receiver {
     fos
   }
 
-  def updateTable(list:List[(String, String, String)]) {
+  def updateTable(list:List[ItemTuple]) {
     val table = new Table()
     table.setWidth("100%")
     table.addContainerProperty("Date", classOf[String],  null)
@@ -131,12 +131,18 @@ case class ImportView(dashboard:Main) extends Receiver {
 
     var itemIds = List[String]()
 
-    list.foreach { x =>
+    val estimatedList = CategoryGuessService().estimateForItems(list)
+
+    estimatedList.foreach { x =>
       val cats = new ComboBoxW()
       categories.foreach { i => cats.addItem(i) }
       val itemId = UUID.randomUUID().toString
       itemIds = itemIds ::: List(itemId)
-      table.addItem(Array(x._1, x._2, x._3, cats), itemId)
+      x._2 match {
+        case null =>
+        case category    => cats.setValue(category)
+      }
+      table.addItem(Array(x._1._1, x._1._2, x._1._3, cats), itemId)
     }
     
     saveBtn.addListener(new ClickListener {
