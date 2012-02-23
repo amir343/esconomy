@@ -36,12 +36,26 @@ case class CategoryGuessService() {
   }
 
   def findTheClosest(item:ItemTuple):(ItemTuple, String) = {
+    var maxCategoryName:String = null
+    var maxSimilarity:Double = 0.0
+    
+    items.foreach { i =>
+      val s = SimilarStringAlgorithm.similarity(item._2, i.itemName)
+      if (s > maxSimilarity) {
+        maxSimilarity = s
+        maxCategoryName = i .category
+      }
+    }
+    
+/*
     items.sortWith { (i1, i2) => 
       SimilarStringAlgorithm.similarity(item._2, i1.itemName) -  SimilarStringAlgorithm.similarity(item._2, i2.itemName) > 0 
     }.headOption match {
       case Some(x) => (item, x.category)
       case None    => (item, null)
     }
+*/
+    (item, maxCategoryName)
   }
 
 }
