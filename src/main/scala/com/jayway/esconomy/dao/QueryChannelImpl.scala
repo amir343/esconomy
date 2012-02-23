@@ -3,8 +3,6 @@ package com.jayway.esconomy.dao
 import com.jayway.esconomy.domain.{Category, Item}
 import scalaz._
 import collection.mutable
-import org.scala_tools.subcut.inject.{Injectable, BindingModule}
-
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
