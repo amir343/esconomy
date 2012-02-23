@@ -4,7 +4,6 @@ import com.vaadin.ui.Button.ClickListener
 import com.vaadin.ui.Upload._
 import java.io.{FileOutputStream, File, OutputStream}
 import com.jayway.esconomy.service.ParseImportedFile
-import com.vaadin.ui.{Table, Button, Upload}
 import java.util.UUID
 import wrapped._
 import collection.JavaConversions._
@@ -15,6 +14,7 @@ import com.jayway.esconomy.util.Utils._
 import com.vaadin.event.Action
 import com.vaadin.event.Action.Handler
 import scalaz.{Success, Failure}
+import com.vaadin.ui.{Label, Table, Button, Upload}
 
 
 /**
@@ -41,6 +41,7 @@ case class ImportView(dashboard:Main) extends Receiver {
   val tableLayout = new VerticalLayoutW()
   val mainLayout = new VerticalLayoutW()
   val mainPanel = new PanelW(caption = "Import", width = "100%", height = "100%")
+  val label = new Label("Please upload your expense tab delimited file contaning {date, item name, price}")
 
   val queries = new QueryChannelImpl
   lazy val categories = queries.allCategories match {
@@ -100,7 +101,7 @@ case class ImportView(dashboard:Main) extends Receiver {
       }
     })
 
-    uploadLayout <~ List(upload, progressIndicator)
+    uploadLayout <~ List(label, upload, progressIndicator)
   }
 
   override def receiveUpload(fileName:String, mimeType:String):OutputStream = {

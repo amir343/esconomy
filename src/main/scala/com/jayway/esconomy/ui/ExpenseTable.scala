@@ -79,7 +79,6 @@ class ExpenseTable(selectedCategory:String, view:View, component:Component) exte
     dataSource removeAllItems()
     var totalSum = 0.0
 
-
     selectedCategory match {
       case null => queries.allItems match {
                       case Failure(x) => component.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
@@ -101,31 +100,31 @@ class ExpenseTable(selectedCategory:String, view:View, component:Component) exte
                     }
     }
 
-      self setColumnFooter ("Item name", "Total expenses")
-      self setColumnFooter ("Price", totalSum + " SEK")
-      self setContainerDataSource dataSource
-      self setVisibleColumns Array[AnyRef]("Item name", "Category", "Date", "Price")
+    self setColumnFooter ("Item name", "Total expenses")
+    self setColumnFooter ("Price", totalSum + " SEK")
+    self setContainerDataSource dataSource
+    self setVisibleColumns Array[AnyRef]("Item name", "Category", "Date", "Price")
   }
   
   def allItemsIn(year:String, month:String) {
-      self removeAllItems()
-      dataSource removeAllItems()
-      var totalSum = 0.0
+    self removeAllItems()
+    dataSource removeAllItems()
+    var totalSum = 0.0
 
-      queries.allItemsIn(year.toInt, month.toInt) match {
-        case Failure(x) =>  component.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
-        case Success(x) => {
-          x.foreach { i =>
-            addToContainer(i, dataSource)
-            totalSum += i.price
-          }
+    queries.allItemsIn(year.toInt, month.toInt) match {
+      case Failure(x) =>  component.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
+      case Success(x) => {
+        x.foreach { i =>
+          addToContainer(i, dataSource)
+          totalSum += i.price
         }
       }
+    }
 
-      self setColumnFooter ("Item name", "Total expenses")
-      self setColumnFooter ("Price", totalSum + " SEK")
-      self setContainerDataSource dataSource
-      self setVisibleColumns Array[AnyRef]("Item name", "Category", "Date", "Price")
+    self setColumnFooter ("Item name", "Total expenses")
+    self setColumnFooter ("Price", totalSum + " SEK")
+    self setContainerDataSource dataSource
+    self setVisibleColumns Array[AnyRef]("Item name", "Category", "Date", "Price")
   }
   
   def addToContainer(record:Item, dataSource:IndexedContainer) = {

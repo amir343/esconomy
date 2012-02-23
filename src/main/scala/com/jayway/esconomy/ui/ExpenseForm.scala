@@ -54,6 +54,10 @@ trait ExpenseForm {
     val gridLayout = new GridLayoutW(columns = 2, rows = 5, height = "100%", width = "100%")
 
     dateInput.setResolution(DateField.RESOLUTION_DAY)
+    priceTxt.setWidth("50%")
+    nameTxt.setWidth("50%")
+    dateInput.setWidth("50%")
+    categoryCombo.setWidth("50%")
 
     val components = List(nameLbl, nameTxt, priceLbl, priceTxt, dateLbl, dateInput, categoryLbl, categoryCombo, btn)
     components foreach { com:AbstractComponent => com.setImmediate(true) }

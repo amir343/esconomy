@@ -1,7 +1,5 @@
 package com.jayway.esconomy.dao
 
-import org.springframework.data.mongodb.core.query.{Criteria, Query}
-import java.util.Calendar
 import com.jayway.esconomy.domain.{Category, Item}
 import collection.mutable
 
