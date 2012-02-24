@@ -3,6 +3,7 @@ package com.jayway.esconomy.service
 import com.jayway.esconomy.dao.QueryChannelImpl
 import scalaz.{Failure, Success}
 import com.jayway.esconomy.util.Utils.ItemTuple
+import com.jayway.esconomy.domain.Item
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -26,7 +27,7 @@ case class CategoryGuessService() {
   
   val query = new QueryChannelImpl
   
-  lazy val items = query.allItems match {
+  lazy val items:List[Item] = query.allItems match {
     case Success(x) => x
     case Failure(x) => List()
   }
@@ -43,7 +44,7 @@ case class CategoryGuessService() {
       val s = SimilarStringAlgorithm.similarity(item._2, i.itemName)
       if (s > maxSimilarity) {
         maxSimilarity = s
-        maxCategoryName = i .category
+        maxCategoryName = i.category
       }
     }
     

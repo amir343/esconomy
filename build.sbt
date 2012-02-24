@@ -2,7 +2,7 @@
 
 name := "esconomy"
 
-organization := "Jayawy"
+organization := "Jayway"
 
 version := "1.0"
 
