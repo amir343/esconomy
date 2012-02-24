@@ -147,7 +147,7 @@ class ExpenseTable(selectedCategory:String, view:View, component:Component) exte
   }
 
   def editTableItem(target:AnyRef) {
-    val editWindow = new WindowW(caption = "Edit Item", height = "380px", width = "380px")
+    val editWindow = new WindowW(caption = "Edit Item", height = "380px", width = "480px")
     val item = this getItem target
     val row = extractFromTable(item)
     val editExpenseForm = new EditExpenseForm(view, row, editWindow)

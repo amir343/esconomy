@@ -47,14 +47,6 @@ case class CategoryGuessService() {
       }
     }
     
-/*
-    items.sortWith { (i1, i2) => 
-      SimilarStringAlgorithm.similarity(item._2, i1.itemName) -  SimilarStringAlgorithm.similarity(item._2, i2.itemName) > 0 
-    }.headOption match {
-      case Some(x) => (item, x.category)
-      case None    => (item, null)
-    }
-*/
     (item, maxCategoryName)
   }
 
