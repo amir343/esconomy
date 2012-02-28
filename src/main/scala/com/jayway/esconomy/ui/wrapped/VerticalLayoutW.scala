@@ -134,7 +134,3 @@ class ButtonW(caption:String = null) extends Button {
   if (caption != null) setCaption(caption)
   setStyleName("default")
 }
-
-class DetachedTabW extends DetachedTabs {
-
-}

@@ -2,8 +2,8 @@ package com.jayway.esconomy.ui
 
 import com.vaadin.Application
 import com.vaadin.terminal.Sizeable
+import wrapped.VerticalLayoutW
 import com.vaadin.ui._
-import wrapped.{DetachedTabW, VerticalLayoutW}
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -76,18 +76,18 @@ class Main extends Application {
   def navigationMenu = {
     val nav = new VerticalLayoutW(margin = false)
 
-    val s = new SideBar
-
+    cssLayout.setSizeFull()
+/*
     cssLayout.setWidth("100%")
     cssLayout.setHeight("100%")
+*/
     cssLayout.setStyleName("sidebar-menu")
 
     items foreach { i =>
       i.hasChildren match {
         case true  => cssLayout.addComponent(new Label(i.title))
         case false => {
-          val item = new DetachedTabW()
-          item.addListener()
+          val item = new NativeButton(i.title)
           item.setData(i)
           item.addListener(MenuItemClickListener(this))
           cssLayout.addComponent(item)
