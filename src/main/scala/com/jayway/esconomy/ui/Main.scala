@@ -1,9 +1,9 @@
 package com.jayway.esconomy.ui
 
 import com.vaadin.Application
-import com.vaadin.terminal.Sizeable
-import wrapped.VerticalLayoutW
+import com.vaadin.terminal.{ThemeResource, Sizeable}
 import com.vaadin.ui._
+import wrapped.{HorizontalLayoutW, VerticalLayoutW}
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -30,7 +30,7 @@ class Main extends Application {
   val cssLayout = new CssLayout
 
   def init() {
-    setMainWindow(new Window("Esconomy - Little Economy Application"))
+    setMainWindow(new Window("Esconomy - Your Little Economy Application"))
     getMainWindow.setContent(mainLayout)
     setTheme("esconomy")
   }
@@ -39,8 +39,9 @@ class Main extends Application {
     val mainLayout = new VerticalSplitPanel
     mainLayout setHeight "100%"
     mainLayout setWidth "100%"
-    mainLayout.setSplitPosition(100, Sizeable.UNITS_PIXELS)
+    mainLayout setSplitPosition (145, Sizeable.UNITS_PIXELS)
     mainLayout setMargin true
+    mainLayout setLocked true
 
     mainLayout addComponent topLayout
     mainLayout addComponent bottomLayout
@@ -48,10 +49,11 @@ class Main extends Application {
   }
 
   def topLayout = {
-    val topLayout = new VerticalLayoutW
-
+    val topLayout = new HorizontalLayoutW
+    val logo = new Embedded(null, new ThemeResource("img/logo.png"))
     val title = new Label("<h1>Welcome to Esconomy!</h1>")
     title setContentMode Label.CONTENT_XHTML
+    topLayout addComponent logo
     topLayout addComponent title
     topLayout
   }
@@ -77,10 +79,6 @@ class Main extends Application {
     val nav = new VerticalLayoutW(margin = false)
 
     cssLayout.setSizeFull()
-/*
-    cssLayout.setWidth("100%")
-    cssLayout.setHeight("100%")
-*/
     cssLayout.setStyleName("sidebar-menu")
 
     items foreach { i =>
