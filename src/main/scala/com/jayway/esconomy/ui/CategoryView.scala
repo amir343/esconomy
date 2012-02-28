@@ -5,7 +5,7 @@ import com.jayway.esconomy.dao.Commands
 import com.jayway.esconomy.domain.Category
 import com.vaadin.ui.Window.Notification
 import com.vaadin.event.ShortcutAction.KeyCode
-import wrapped.{VerticalLayoutW, HorizontalLayoutW}
+import wrapped.{ButtonW, PanelW, VerticalLayoutW, HorizontalLayoutW}
 
 
 /**
@@ -30,16 +30,16 @@ case class CategoryView(dashboard:Main) extends Button.ClickListener {
 
   val label = new Label("Category")
   val categories = new TextField()
-  val addBtn = new Button("Add")
+  val addBtn = new ButtonW("Add")
   addBtn addListener this
   addBtn setClickShortcut KeyCode.ENTER
-  val categoryTable = new CategoryTable(dashboard.tree)
+  val categoryTable = new CategoryTable(dashboard.cssLayout)
 
   def components = {
-    val panel = new Panel("Categories")
+    val panel = new PanelW(caption = "Categories")
     val verticalLayout = new VerticalLayoutW ( width = "100%")
     verticalLayout <~ List(addCategoryLayout, categoryTable)
-    panel.addComponent(verticalLayout)
+    panel <~ verticalLayout
     panel
   }
   

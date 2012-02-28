@@ -9,8 +9,8 @@ import collection.JavaConversions._
 import com.vaadin.ui._
 import com.vaadin.event.ShortcutAction.KeyCode
 import org.vaadin.autoreplacefield.DoubleField
-import wrapped.GridLayoutW
 import scalaz.{Success, Failure}
+import wrapped.{ButtonW, GridLayoutW}
 
 
 /**
@@ -72,7 +72,7 @@ trait ExpenseForm {
 
 class AddExpenseForm(val expenseView:AddExpenseView) extends ExpenseForm with Button.ClickListener {
 
-  val addBtn = new Button("Add")
+  val addBtn = new ButtonW("Add")
   addBtn setClickShortcut KeyCode.ENTER
   addBtn addListener this
 
@@ -105,7 +105,7 @@ class AddExpenseForm(val expenseView:AddExpenseView) extends ExpenseForm with Bu
 
 class EditExpenseForm(val view:View, val item:Item, val window:Window) extends ExpenseForm with Button.ClickListener {
 
-  val editBtn = new Button("Edit")
+  val editBtn = new ButtonW("Edit")
   editBtn setClickShortcut KeyCode.ENTER
   editBtn addListener this
 

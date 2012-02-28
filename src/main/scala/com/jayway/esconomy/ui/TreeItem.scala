@@ -1,7 +1,7 @@
 package com.jayway.esconomy.ui
 
-import com.vaadin.data.Property
 import com.vaadin.data.Property.ValueChangeEvent
+import com.vaadin.ui.Button
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -52,14 +52,16 @@ case class Import() extends TreeItem {
   override val title = "Import"
 }
 
-case class MenuItemValueChangeListener(dashboard:Main) extends Property.ValueChangeListener {
-  def valueChange(event:ValueChangeEvent) {
-    event.getProperty.getValue.asInstanceOf[TreeItem] match {
-      case AddExpense()  => dashboard switchToAddExpenseView
-      case AddCategory() => dashboard switchToAddCategoryView
-      case Reports() => dashboard switchToReportView
-      case Import() => dashboard switchToImportView
-      case _ => println("No such item found")
+case class MenuItemClickListener(dashboard:Main) extends Button.ClickListener {
+
+  def buttonClick(event:Button#ClickEvent) {
+    event.getButton.getData match {
+      case AddExpense()  => dashboard switchToAddExpenseView()
+      case AddCategory() => dashboard switchToAddCategoryView()
+      case Reports()     => dashboard switchToReportView()
+      case Import()      => dashboard switchToImportView()
+      case _             => println("No such item found")
     }
   }
+
 }

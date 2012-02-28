@@ -28,7 +28,7 @@ import com.jayway.esconomy.util.Utils._
 case class AddExpenseView(dashboard:Main) extends View with Property.ValueChangeListener {
 
   val addExpensePanel = new PanelW(caption = "Add an expense", width = "50%", height = "60%")
-  val currentExpenseTable = new ExpenseTable(null, this, dashboard.tree)
+  val currentExpenseTable = new ExpenseTable(null, this, dashboard.cssLayout)
   val currentExpensesPanel = new PanelW(caption = "Current expenses")
 
   val label = new Label("Period: ")

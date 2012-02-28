@@ -13,6 +13,7 @@ import com.vaadin.ui.Window.Notification
 import com.vaadin.event.ShortcutAction.KeyCode
 import com.jayway.esconomy.service.ComputeService
 import scalaz.{Success, Failure}
+import wrapped.ButtonW
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -32,7 +33,7 @@ import scalaz.{Success, Failure}
  * @author Amir Moulavi
  */
 
-class CategoryTable(tree:Tree) extends Table {
+class CategoryTable(layout:Layout) extends Table {
 
   val editAction = new Action("Edit")
   val removeAction = new Action("Remove")
@@ -69,7 +70,7 @@ class CategoryTable(tree:Tree) extends Table {
     dataSource removeAllItems()
 
     queries.allCategories match {
-      case Failure(x) => tree.getWindow.showNotification("Error", x.toString, Notification.TYPE_ERROR_MESSAGE)
+      case Failure(x) => layout.getWindow.showNotification("Error", x.toString, Notification.TYPE_ERROR_MESSAGE)
       case Success(x) => { x.foreach { i => addToContainer(i, dataSource)} }
       }
 
@@ -118,7 +119,7 @@ class CategoryTable(tree:Tree) extends Table {
   def getEditWindowComponents(window:Window, category:Category) = {
     val categoryTxt = new TextField("Category")
     categoryTxt.setValue(category.category)
-    val updateBtn = new Button("Update")
+    val updateBtn = new ButtonW("Update")
     updateBtn setClickShortcut KeyCode.ENTER
     val vertical = new VerticalLayout
     vertical.setSpacing(true)

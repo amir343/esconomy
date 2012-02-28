@@ -3,7 +3,7 @@ package com.jayway.esconomy.ui
 import com.vaadin.Application
 import com.vaadin.terminal.Sizeable
 import com.vaadin.ui._
-import wrapped.VerticalLayoutW
+import wrapped.{DetachedTabW, VerticalLayoutW}
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -27,12 +27,12 @@ class Main extends Application {
 
   val items = List(MyEconomy(), AddExpense(), Reports(), AddCategory(), Import())
   val centerLayout = new VerticalLayoutW( width = "100%", height = "100%")
-  val tree = new Tree
+  val cssLayout = new CssLayout
 
   def init() {
     setMainWindow(new Window("Esconomy - Little Economy Application"))
     getMainWindow.setContent(mainLayout)
-    setTheme("runo")
+    setTheme("esconomy")
   }
 
   def mainLayout = {
@@ -74,23 +74,28 @@ class Main extends Application {
   }
   
   def navigationMenu = {
-    val nav = new VerticalLayoutW()
+    val nav = new VerticalLayoutW(margin = false)
 
-    tree setImmediate true
+    val s = new SideBar
 
-    items foreach { tree addItem _ }
-    items foreach { x => tree.setItemCaption(x, x.title)}
-    items.filter( ! _.hasChildren ).foreach { tree.setChildrenAllowed(_, false) }
+    cssLayout.setWidth("100%")
+    cssLayout.setHeight("100%")
+    cssLayout.setStyleName("sidebar-menu")
 
-    tree.setParent(AddExpense(), MyEconomy())
-    tree.setParent(AddCategory(), MyEconomy())
-    tree.setParent(Reports(), MyEconomy())
-
-    tree.addListener(MenuItemValueChangeListener(this))
-
-    items.filter( _.hasChildren ).foreach { tree.expandItemsRecursively(_) }
+    items foreach { i =>
+      i.hasChildren match {
+        case true  => cssLayout.addComponent(new Label(i.title))
+        case false => {
+          val item = new DetachedTabW()
+          item.addListener()
+          item.setData(i)
+          item.addListener(MenuItemClickListener(this))
+          cssLayout.addComponent(item)
+        }
+      }
+    }
     
-    nav addComponent tree
+    nav addComponent cssLayout
     nav
   }
   

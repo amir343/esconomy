@@ -56,7 +56,7 @@ case class ReportView(dashboard:Main) extends View with Property.ValueChangeList
   val yearCombo = new ComboBoxW(caption = "Year")
   val monthCombo = new ComboBoxW(caption = "Month")
   val showYearlyChkBox = new CheckBox("Show yearly", false)
-  val showItemsBtn = new Button()
+  val showItemsBtn = new ButtonW()
   var selectedPieChartCategory:String = _
   val self = this
 

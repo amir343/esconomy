@@ -4,6 +4,7 @@ import com.vaadin.ui.AbstractOrderedLayout._
 import com.vaadin.ui._
 import com.vaadin.ui.Panel._
 import com.vaadin.ui.AbstractSelect._
+import com.github.wolfie.detachedtabs.DetachedTabs
 
 
 /**
@@ -65,6 +66,7 @@ class PanelW(caption:String = "",
   setImmediate(immediate)
   if (width != null) setWidth(width)
   if (height!= null) setHeight(height)
+  setStyleName("bubble")
 
   def <~(list:List[Component]) = list foreach { addComponent(_) }
   def <~(c:Component) = addComponent(c)
@@ -126,4 +128,13 @@ class GridLayoutW(columns:Int,
   if (width != null) setWidth(width)
   def <~(list:List[Component]) = list foreach { addComponent(_) }
   def <~(component:Component) = addComponent(component)
+}
+
+class ButtonW(caption:String = null) extends Button {
+  if (caption != null) setCaption(caption)
+  setStyleName("default")
+}
+
+class DetachedTabW extends DetachedTabs {
+
 }

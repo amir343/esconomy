@@ -55,8 +55,8 @@ case class ImportView(dashboard:Main) extends Receiver {
   }
   var file:File = _
   val upload = new Upload(null, this)
-  val cancelBtn = new Button("Cancel")
-  val saveBtn = new Button("Save")
+  val cancelBtn = new ButtonW("Cancel")
+  val saveBtn = new ButtonW("Save")
   val progressIndicator = new ProgressIndicatorW(visible = false)
   val removeAction = new Action("Remove")
 
