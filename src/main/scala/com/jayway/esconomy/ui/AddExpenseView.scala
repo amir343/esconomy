@@ -40,7 +40,7 @@ case class AddExpenseView(dashboard:Main) extends View with Property.ValueChange
     val verticalLayout = new VerticalLayoutW
     constructAddExpensePanel()
     constructCurrentExpensesPanel()
-    verticalLayout <~ List(addExpensePanel, currentExpensesPanel)
+    verticalLayout <~ addExpensePanel <~ currentExpensesPanel
     verticalLayout
   }
   
@@ -76,7 +76,7 @@ case class AddExpenseView(dashboard:Main) extends View with Property.ValueChange
       }
     })
 
-    hori <~ List(label, yearCombo, monthCombo, showAllChkBox)
+    hori <~ label <~ yearCombo <~ monthCombo <~ showAllChkBox
     hori
   }
 

@@ -38,7 +38,10 @@ class VerticalLayoutW(immediate:Boolean = true,
   if (height!= null) setHeight(height)
 
   def <~(list:List[Component]) = list foreach { addComponent(_) }
-  def <~(c:Component) = addComponent(c)
+  def <~(c:Component):VerticalLayoutW = {
+    addComponent(c)
+    this
+  }
 
 }
 
@@ -54,7 +57,10 @@ class HorizontalLayoutW(immediate:Boolean = true,
   if (height!= null) setHeight(height)
 
   def <~(list:List[Component]) = list foreach { addComponent(_) }
-  def <~(c:Component) = addComponent(c)
+  def <~(c:Component):HorizontalLayoutW = {
+    addComponent(c)
+    this
+  }
 
 }
 
@@ -69,7 +75,10 @@ class PanelW(caption:String = "",
   setStyleName("bubble")
 
   def <~(list:List[Component]) = list foreach { addComponent(_) }
-  def <~(c:Component) = addComponent(c)
+  def <~(c:Component):PanelW = {
+    addComponent(c)
+    this
+  }
 
 }
 
@@ -83,7 +92,10 @@ class ComboBoxW(caption:String = null,
   setNullSelectionAllowed(nullSelectionAllowed)
 
   def <~(list:List[Any]) = list foreach { addItem(_) }
-  def <~(item:Any) = addItem(item)
+  def <~(item:Any):ComboBoxW = {
+    addItem(item)
+    this
+  }
 
 }
 
@@ -127,7 +139,10 @@ class GridLayoutW(columns:Int,
   if (height != null) setHeight(height)
   if (width != null) setWidth(width)
   def <~(list:List[Component]) = list foreach { addComponent(_) }
-  def <~(component:Component) = addComponent(component)
+  def <~(component:Component):GridLayoutW = {
+    addComponent(component)
+    this
+  }
 }
 
 class ButtonW(caption:String = null) extends Button {

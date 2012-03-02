@@ -52,7 +52,7 @@ case class ReportView(dashboard:Main) extends View with Property.ValueChangeList
   val periodLayout = new HorizontalLayoutW(width = "100%")
   val chartLayout = new HorizontalLayoutW(width = "100%")
   val categoryLayout = new HorizontalLayoutW(width = "100%")
-  categoryPanel <~ List(categoryLayout, periodLayout)
+  categoryPanel <~ categoryLayout <~ periodLayout
   val yearCombo = new ComboBoxW(caption = "Year")
   val monthCombo = new ComboBoxW(caption = "Month")
   val showYearlyChkBox = new CheckBox("Show yearly", false)
@@ -72,7 +72,7 @@ case class ReportView(dashboard:Main) extends View with Property.ValueChangeList
     constructCategoryLayout()
     constructPeriodLayout()
     mainLayout.setSizeFull()
-    mainLayout <~ List(categoryPanel, chartLayout, expenseTableLayout)
+    mainLayout <~ categoryPanel <~ chartLayout <~ expenseTableLayout
     mainPanel <~ mainLayout
     mainPanel
   }
@@ -123,7 +123,7 @@ case class ReportView(dashboard:Main) extends View with Property.ValueChangeList
       }
     })
     
-    periodLayout <~ List(yearCombo, monthCombo, showYearlyChkBox)
+    periodLayout <~ yearCombo <~ monthCombo <~ showYearlyChkBox
 
   }
 
@@ -163,7 +163,7 @@ case class ReportView(dashboard:Main) extends View with Property.ValueChangeList
     val bChart = barChart(list)
     val chart = pieChart (list.map { x => (x._1, if (x._2 != 0.0) df.format(100 * x._2/totalExpense).toDouble else x._2)})
     chartLayout.removeAllComponents()
-    chartLayout <~ List(chart,bChart)
+    chartLayout <~ chart <~ bChart
   }
 
   def pieChart(list:List[(String, Double)]):VerticalLayoutW = {
@@ -209,7 +209,7 @@ case class ReportView(dashboard:Main) extends View with Property.ValueChangeList
         showItemsBtn.setVisible(true)
       }
     })
-    verticalLayout <~ List(chart, showItemsBtn)
+    verticalLayout <~ chart <~ showItemsBtn
     verticalLayout
   }
   

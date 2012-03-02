@@ -62,7 +62,7 @@ case class ImportView(dashboard:Main) extends Receiver {
 
   def getComponents = {
     constructUploadLayout()
-    mainLayout <~ List(uploadLayout, tableLayout)
+    mainLayout <~ uploadLayout <~ tableLayout
     mainPanel <~ mainLayout
     mainPanel
   }
@@ -103,7 +103,7 @@ case class ImportView(dashboard:Main) extends Receiver {
       }
     })
 
-    uploadLayout <~ List(label, upload, progressIndicator)
+    uploadLayout <~ label <~ upload <~ progressIndicator
   }
 
   override def receiveUpload(fileName:String, mimeType:String):OutputStream = {
@@ -120,6 +120,7 @@ case class ImportView(dashboard:Main) extends Receiver {
     table.addContainerProperty("Price", classOf[String],  null)
     table.addContainerProperty("Category", classOf[ComboBoxW], null)
     table.setSelectable(true)
+    table.setPageLength(30)
 
     table addActionHandler { new Handler {
       def getActions(target: AnyRef, sender: AnyRef): Array[Action] = Array(removeAction)
@@ -168,7 +169,7 @@ case class ImportView(dashboard:Main) extends Receiver {
       }
     })
     
-    tableLayout <~ List(table, saveBtn)
+    tableLayout <~ table <~ saveBtn
   }
 
  

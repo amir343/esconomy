@@ -38,14 +38,14 @@ case class CategoryView(dashboard:Main) extends Button.ClickListener {
   def components = {
     val panel = new PanelW(caption = "Categories")
     val verticalLayout = new VerticalLayoutW ( width = "100%")
-    verticalLayout <~ List(addCategoryLayout, categoryTable)
+    verticalLayout <~ addCategoryLayout <~ categoryTable
     panel <~ verticalLayout
     panel
   }
   
   def addCategoryLayout:HorizontalLayoutW = {
     val hori = new HorizontalLayoutW {}
-    hori <~ List(label, categories, addBtn)
+    hori <~ label <~ categories <~ addBtn
     categories focus()
     hori
   }

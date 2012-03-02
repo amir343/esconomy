@@ -41,7 +41,7 @@ class ExpenseTable(selectedCategory:String, view:View, component:Component) exte
 
   val self = this
 
-  this setPageLength 10
+  this setPageLength 20
   this setWidth "100%"
   this setSelectable true
   this setFooterVisible true
