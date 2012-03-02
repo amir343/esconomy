@@ -13,6 +13,13 @@ Esconomy is your little economy application that helps you keep track of your ex
 [MongoDB]: http://www.mongodb.org/
 [Scalaz]: https://github.com/scalaz/scalaz
 
+
+MongoDB set up
+--------------
+
+You need to install MongoDB and run `mongod` daemon. The rest is done by the application.
+
+
 How to build
 ------------
 
