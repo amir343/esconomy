@@ -5,6 +5,7 @@ import com.vaadin.ui._
 import com.vaadin.ui.Panel._
 import com.vaadin.ui.AbstractSelect._
 import com.github.wolfie.detachedtabs.DetachedTabs
+import com.vaadin.ui.GridLayout._
 
 
 /**
@@ -148,4 +149,14 @@ class GridLayoutW(columns:Int,
 class ButtonW(caption:String = null) extends Button {
   if (caption != null) setCaption(caption)
   setStyleName("default")
+}
+
+class TabSheetW(immediate:Boolean = true,
+                height:String = "100%",
+                width:String = "100%"
+                ) extends TabSheet {
+  setImmediate(immediate)
+  if (height != null) setHeight(height)
+  if (width != null) setWidth(width)
+
 }

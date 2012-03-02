@@ -55,4 +55,9 @@ class QueryChannelImpl extends QueryChannel {
     catch { case e => Failure(e.getMessage)}
   }
 
+  override def find(keyword:String):Validation[String, List[Item]] = {
+    try { Success(exec.find(keyword)) }
+    catch { case e => Failure(e.getMessage)}
+  }
+
 }

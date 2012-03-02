@@ -1,7 +1,8 @@
-package com.jayway.esconomy.dao
+package com.jayway.esconomy.ui
 
-import com.jayway.esconomy.domain.{Category, Item}
-import collection.mutable
+import com.vaadin.ui.Component
+import com.vaadin.ui.Window.Notification
+import scalaz.{Success, Failure}
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -21,22 +22,18 @@ import collection.mutable
  * @author Amir Moulavi
  */
 
-trait QueryExecution {
+class SearchViewExpenseTable(view:View, component:Component)
+  extends ExpenseTable(view, component) {
 
-  def findAll:List[Item]
+  override def allItems(filter:String) {
+    self removeAllItems()
+    dataSource removeAllItems()
 
-  def findAllInCategory(category:String):List[Item]
+    queries.find(filter) match {
+      case Failure(x) => component.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
+      case Success(x) => x.foreach ( addToContainer(_, dataSource) )
+    }
 
-  def allItemsIn(year:Int, month:Int):List[Item]
-
-  def allCategories:List[Category]
-
-  def itemsInCategory(category:String):List[Item]
-
-  def itemsGroupedByCategoriesIn(year:Int, month:Int, currentCategories:mutable.ListBuffer[String]):List[(String, Double)]
-
-  def yearlyItemsGroupedByCategoriesIn(year:Int, currentCategories:mutable.ListBuffer[String]):List[(String, Double)]
-
-  def find(keyword:String):List[Item]
+  }
 
 }

@@ -25,7 +25,7 @@ import wrapped.{HorizontalLayoutW, VerticalLayoutW}
 
 class Main extends Application {
 
-  val items = List(MyEconomy(), AddExpense(), Reports(), AddCategory(), Import())
+  val items = List(MyEconomy(), AddExpense(), AddCategory(), Reports(), Search(), Import())
   val centerLayout = new VerticalLayoutW( width = "100%", height = "100%")
   val cssLayout = new CssLayout
 
@@ -115,6 +115,11 @@ class Main extends Application {
   def switchToImportView() {
     getCenterLayout.removeAllComponents()
     getCenterLayout <~ ImportView(this).getComponents
+  }
+
+  def switchToSearchView() {
+    getCenterLayout.removeAllComponents()
+    getCenterLayout <~ SearchView(this).getComponents
   }
 
 

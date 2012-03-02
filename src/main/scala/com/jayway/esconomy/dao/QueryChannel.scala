@@ -35,5 +35,7 @@ trait QueryChannel {
   def itemsGroupedByCategoriesIn(year:Int, month:Int, currentCategories:mutable.ListBuffer[String]):Validation[String, List[(String, Double)]]
 
   def yearlyItemsGroupedByCategoriesIn(year:Int, currentCategories:mutable.ListBuffer[String]):Validation[String, List[(String, Double)]]
+  
+  def find(keyword:String):Validation[String, List[Item]]
 
 }

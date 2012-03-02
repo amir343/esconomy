@@ -52,6 +52,11 @@ case class Import() extends TreeItem {
   override val title = "Import"
 }
 
+case class Search() extends TreeItem {
+  override val title = "Search"
+}
+
+
 case class MenuItemClickListener(dashboard:Main) extends Button.ClickListener {
 
   def buttonClick(event:Button#ClickEvent) {
@@ -60,6 +65,7 @@ case class MenuItemClickListener(dashboard:Main) extends Button.ClickListener {
       case AddCategory() => dashboard switchToAddCategoryView()
       case Reports()     => dashboard switchToReportView()
       case Import()      => dashboard switchToImportView()
+      case Search()      => dashboard switchToSearchView()
       case _             => println("No such item found")
     }
   }

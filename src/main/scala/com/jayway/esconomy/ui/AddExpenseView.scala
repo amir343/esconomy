@@ -28,7 +28,7 @@ import com.jayway.esconomy.util.Utils._
 case class AddExpenseView(dashboard:Main) extends View with Property.ValueChangeListener {
 
   val addExpensePanel = new PanelW(caption = "Add an expense", width = "50%", height = "60%")
-  val currentExpenseTable = new ExpenseTable(null, this, dashboard.cssLayout)
+  val currentExpenseTable = new AddExpenseExpenseTable(null, this, dashboard.cssLayout)
   val currentExpensesPanel = new PanelW(caption = "Current expenses")
 
   val label = new Label("Period: ")
@@ -70,7 +70,7 @@ case class AddExpenseView(dashboard:Main) extends View with Property.ValueChange
     showAllChkBox.addListener(new ValueChangeListener {
       def valueChange(event: ValueChangeEvent) {
         showAllChkBox.getValue.asInstanceOf[Boolean] match {
-          case true  => disablePeriodConfigs(); currentExpenseTable.allItems()
+          case true  => disablePeriodConfigs(); currentExpenseTable.allItems(null)
           case false => enablePeriodConfig(); currentExpenseTable.allItemsIn(yearCombo.getValue.toString, months.indexOf(monthCombo.getValue.toString).toString)
         }
       }
@@ -102,7 +102,7 @@ case class AddExpenseView(dashboard:Main) extends View with Property.ValueChange
 
   override def decideTheView() {
     showAllChkBox.getValue.asInstanceOf[Boolean] match {
-      case true  => currentExpenseTable.allItems()
+      case true  => currentExpenseTable.allItems(null)
       case false => currentExpenseTable.allItemsIn(yearCombo.getValue.toString, months.indexOf(monthCombo.getValue.toString).toString)
     }
   }

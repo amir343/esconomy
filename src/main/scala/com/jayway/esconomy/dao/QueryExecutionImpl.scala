@@ -76,6 +76,8 @@ class QueryExecutionImpl extends QueryExecution {
       }
   }
 
+  override def find(keyword:String):List[Item] = findAll.filter (_.itemName.toLowerCase.contains(keyword.toLowerCase))
+
   private def sum(items:List[Item]):Double = {
     items.foldLeft(0.0) { (r,c) => r + c.price }
   }

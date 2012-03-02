@@ -62,7 +62,7 @@ case class ReportView(dashboard:Main) extends View with Property.ValueChangeList
 
   showItemsBtn.addListener(new ClickListener {
     def buttonClick(event: Button#ClickEvent) {
-      val expenseTable = new ExpenseTable(selectedPieChartCategory, self, showItemsBtn)
+      val expenseTable = new AddExpenseExpenseTable(selectedPieChartCategory, self, showItemsBtn)
       expenseTableLayout removeAllComponents()
       expenseTableLayout <~ expenseTable
     }
@@ -271,7 +271,7 @@ case class ReportView(dashboard:Main) extends View with Property.ValueChangeList
 
   override def decideTheView() {
     expenseTableLayout removeAllComponents()
-    expenseTableLayout <~ new ExpenseTable(selectedPieChartCategory, this, showItemsBtn)
+    expenseTableLayout <~ new AddExpenseExpenseTable(selectedPieChartCategory, this, showItemsBtn)
     updateView()
   }
 

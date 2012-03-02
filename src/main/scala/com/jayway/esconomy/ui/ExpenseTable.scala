@@ -5,7 +5,6 @@ import com.jayway.esconomy.domain.Item
 import com.vaadin.event.Action
 import com.vaadin.event.Action.Handler
 import collection.JavaConversions._
-import com.vaadin.ui.Window.Notification
 import com.vaadin.data.{Item => VaadinItem}
 import com.vaadin.data.Property.{ValueChangeEvent, ValueChangeListener}
 import wrapped.{WindowW, VerticalLayoutW, PanelW, ComboBoxW}
@@ -32,7 +31,7 @@ import com.jayway.esconomy.dao.{Commands, QueryChannelImpl}
  *
  * @author Amir Moulavi
  */
-class ExpenseTable(selectedCategory:String, view:View, component:Component) extends Table {
+abstract class ExpenseTable(view:View, component:Component) extends Table {
 
   val queries = new QueryChannelImpl
 
@@ -55,13 +54,14 @@ class ExpenseTable(selectedCategory:String, view:View, component:Component) exte
   }
 
   List( ("Id", classOf[String]),
-        ("Item name", classOf[String]),
-        ("Category", classOf[ComboBoxW]),
-        ("Date", classOf[String]),
-        ("Price", classOf[JDouble]) )
+    ("Item name", classOf[String]),
+    ("Category", classOf[ComboBoxW]),
+    ("Date", classOf[String]),
+    ("Price", classOf[JDouble]) )
     .foreach { x => dataSource.addContainerProperty(x._1, x._2, null)  }
 
-  allItems()
+  setContainerDataSource(dataSource)
+  setVisibleColumns(Array[AnyRef]("Item name", "Category", "Date", "Price"))
 
   this addActionHandler { new Handler {
     def getActions(target: AnyRef, sender: AnyRef): Array[Action] = Array(editAction, removeAction)
@@ -74,59 +74,8 @@ class ExpenseTable(selectedCategory:String, view:View, component:Component) exte
     }
   }}
 
-  def allItems() {
-    self removeAllItems()
-    dataSource removeAllItems()
-    var totalSum = 0.0
+  def allItems(filter:String)
 
-    selectedCategory match {
-      case null => queries.allItems match {
-                      case Failure(x) => component.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
-                      case Success(x) => {
-                        x.foreach { i =>
-                          addToContainer(i, dataSource)
-                          totalSum += i.price
-                        }
-                      }
-                   }
-      case _    => queries.allItemsInCategory(selectedCategory) match {
-                      case Failure(x) => component.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
-                      case Success(x) => {
-                        x.foreach { i =>
-                          addToContainer(i, dataSource)
-                          totalSum += i.price
-                        }
-                      }
-                    }
-    }
-
-    self setColumnFooter ("Item name", "Total expenses")
-    self setColumnFooter ("Price", totalSum + " SEK")
-    self setContainerDataSource dataSource
-    self setVisibleColumns Array[AnyRef]("Item name", "Category", "Date", "Price")
-  }
-  
-  def allItemsIn(year:String, month:String) {
-    self removeAllItems()
-    dataSource removeAllItems()
-    var totalSum = 0.0
-
-    queries.allItemsIn(year.toInt, month.toInt) match {
-      case Failure(x) =>  component.getWindow.showNotification("Error", x, Notification.TYPE_ERROR_MESSAGE)
-      case Success(x) => {
-        x.foreach { i =>
-          addToContainer(i, dataSource)
-          totalSum += i.price
-        }
-      }
-    }
-
-    self setColumnFooter ("Item name", "Total expenses")
-    self setColumnFooter ("Price", totalSum + " SEK")
-    self setContainerDataSource dataSource
-    self setVisibleColumns Array[AnyRef]("Item name", "Category", "Date", "Price")
-  }
-  
   def addToContainer(record:Item, dataSource:IndexedContainer) = {
     val itemId = dataSource.addItem()
     val item = dataSource.getItem(itemId)
