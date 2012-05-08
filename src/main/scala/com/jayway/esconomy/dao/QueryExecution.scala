@@ -37,6 +37,8 @@ trait QueryExecution {
 
   def yearlyItemsGroupedByCategoriesIn(year:Int, currentCategories:mutable.ListBuffer[String]):List[(String, Double)]
 
+  def groupedPriceForItemsInCategory(category:String):List[(String, Double)]
+
   def find(keyword:String):List[Item]
 
 }

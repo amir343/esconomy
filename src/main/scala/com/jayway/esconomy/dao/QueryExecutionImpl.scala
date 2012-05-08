@@ -6,6 +6,8 @@ import java.util.Calendar
 import com.jayway.esconomy.domain.{Category, Item}
 import org.springframework.data.mongodb.core.query.{Criteria, Query}
 import collection.mutable
+import scalaz._
+import Scalaz._
 
 
 /**
@@ -26,7 +28,7 @@ import collection.mutable
  * @author Amir Moulavi
  */
 
-class QueryExecutionImpl extends QueryExecution {
+private[dao] class QueryExecutionImpl extends QueryExecution {
 
   override def findAll:List[Item] = mongoOperations.findAll(classOf[Item], itemCollection).asScala.toList
 
@@ -74,6 +76,17 @@ class QueryExecutionImpl extends QueryExecution {
       }.map { tuples =>
         (tuples._1.category, sum(tuples._2))
       }
+  }
+
+  override def groupedPriceForItemsInCategory(category:String):List[(String, Double)] = {
+    val cal = Calendar.getInstance()
+    var grouped = Map.empty[String, Double]
+    findAll.filter(_.category == category).foreach { item =>
+      cal.setTime(item.date)
+      val key = "%s-%02d".format(cal.get(Calendar.YEAR).toString, cal.get(Calendar.MONTH))
+      grouped = grouped |+| Map(key -> item.price)
+    }
+    grouped.toList
   }
 
   override def find(keyword:String):List[Item] = findAll.filter (_.itemName.toLowerCase.contains(keyword.toLowerCase))

@@ -37,27 +37,32 @@ class QueryChannelImpl extends QueryChannel {
 
   override def allItemsIn(year:Int, month:Int):Validation[String, List[Item]] = {
     try { Success(exec.allItemsIn(year, month).sortWith( (i1, i2) => i1.date.compareTo(i2.date) > 0)) }
-    catch { case e => Failure(e.getMessage)}
+    catch { case e => Failure(e.getMessage) }
   }
 
   override def allCategories:Validation[String, List[Category]] = {
     try { Success(exec.allCategories) }
-    catch { case e => Failure(e.getMessage)}
+    catch { case e => Failure(e.getMessage) }
   }
 
   override def itemsGroupedByCategoriesIn(year:Int, month:Int, currentCategories:mutable.ListBuffer[String]):Validation[String, List[(String, Double)]] = {
     try { Success(exec.itemsGroupedByCategoriesIn(year, month, currentCategories)) }
-    catch { case e => Failure(e.getMessage)}
+    catch { case e => Failure(e.getMessage) }
   }
 
   override def yearlyItemsGroupedByCategoriesIn(year:Int, currentCategories:mutable.ListBuffer[String]):Validation[String, List[(String, Double)]] = {
     try { Success(exec.yearlyItemsGroupedByCategoriesIn(year, currentCategories)) }
-    catch { case e => Failure(e.getMessage)}
+    catch { case e => Failure(e.getMessage) }
+  }
+
+  override def groupedPriceForItemsInCategory(category:String):Validation[String, List[(String, Double)]] = {
+    try { Success(exec.groupedPriceForItemsInCategory(category).sortWith( (d1, d2) => d1._1.compareTo(d2._1) > 0).take(14).reverse) }
+    catch { case e => Failure(e.getMessage) }
   }
 
   override def find(keyword:String):Validation[String, List[Item]] = {
     try { Success(exec.find(keyword)) }
-    catch { case e => Failure(e.getMessage)}
+    catch { case e => Failure(e.getMessage) }
   }
 
 }
