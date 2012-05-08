@@ -365,7 +365,7 @@ case class ReportView(dashboard:Main) extends View with Property.ValueChangeList
         case "08" => "Sep"
         case "09" => "Oct"
         case "10" => "Nov"
-        case "11" => "Dev"
+        case "11" => "Dec"
         case _    => "WTF!"
       }
       tokens(0) + " " + month
