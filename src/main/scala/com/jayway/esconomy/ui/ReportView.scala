@@ -6,10 +6,7 @@ import com.vaadin.data.Property
 import java.util.{LinkedHashSet, Calendar}
 import com.invient.vaadin.charts.{InvientCharts, InvientChartsConfig}
 import java.text.DecimalFormat
-import com.invient.vaadin.charts.InvientChartsConfig.GeneralChartConfig.Margin
 import com.invient.vaadin.charts.InvientChartsConfig._
-import com.invient.vaadin.charts.InvientChartsConfig.AxisBase.AxisTitle
-import com.invient.vaadin.charts.Color.RGB
 import com.vaadin.data.Property.{ValueChangeListener, ValueChangeEvent}
 import com.vaadin.ui.Window.Notification
 import scalaz.{Success, Failure}
@@ -17,7 +14,7 @@ import collection.mutable
 import com.invient.vaadin.charts.InvientCharts._
 import com.vaadin.ui.{Button, CheckBox}
 import com.vaadin.ui.Button.ClickListener
-import com.jayway.esconomy.dao.{QueryChannelImpl}
+import com.jayway.esconomy.dao.QueryChannelImpl
 import wrapped._
 
 
@@ -49,7 +46,7 @@ case class ReportView(dashboard:Main) extends View with Property.ValueChangeList
     case Failure(x) => List()
   }
 
-  val df = new DecimalFormat("##.##");
+  val df = new DecimalFormat("##.##")
   val mainTab = new TabSheetW()
 
   /* All Categories tab */
@@ -73,6 +70,8 @@ case class ReportView(dashboard:Main) extends View with Property.ValueChangeList
   allCategoriesCombo <~ cats
   val comboCategoryPanel = new PanelW(caption = "Categories", width = "100%")
   val categoryFocusedChartLayout = new VerticalLayoutW(height = "100%", width = "100%")
+
+  lazy val chartConstructors = new ChartConstructors(allCategoriesCombo, monthCombo, yearCombo, showYearlyChkBox)
 
   showItemsInCategoryBtn.addListener(new ClickListener {
     def buttonClick(event: Button#ClickEvent) {
@@ -99,7 +98,7 @@ case class ReportView(dashboard:Main) extends View with Property.ValueChangeList
         queries.groupedPriceForItemsInCategory(allCategoriesCombo.getValue.asInstanceOf[String]) match {
           case Success(result)  =>
             categoryFocusedChartLayout.removeAllComponents()
-            categoryFocusedChartLayout <~ groupedCategoryBarChart(result.toList)
+            categoryFocusedChartLayout <~ chartConstructors.groupedCategoryBarChart(result.toList)
           case Failure(message) => println(message)
         }
       }
@@ -187,7 +186,7 @@ case class ReportView(dashboard:Main) extends View with Property.ValueChangeList
 
   def updateChart(list:List[(String, Double)]) {
     val totalExpense = list.foldLeft(0.0)( (r,c) => r + c._2)
-    val bChart = allCategoriesBarChart(list)
+    val bChart = chartConstructors.allCategoriesBarChart(list)
     val chart = pieChart (list.map { x => (x._1, if (x._2 != 0.0) df.format(100 * x._2/totalExpense).toDouble else x._2)})
     allCategoriesChartLayout.removeAllComponents()
     allCategoriesChartLayout <~ chart <~ bChart
@@ -241,138 +240,6 @@ case class ReportView(dashboard:Main) extends View with Property.ValueChangeList
     verticalLayout
   }
   
-  def allCategoriesBarChart(list:List[(String, Double)]):InvientCharts = {
-    val chartConfig = new InvientChartsConfig()
-    chartConfig.getGeneralChartConfig.setType(SeriesType.COLUMN)
-    chartConfig.getGeneralChartConfig.setMargin(new Margin())
-    chartConfig.getGeneralChartConfig.getMargin.setTop(50)
-    chartConfig.getGeneralChartConfig.getMargin.setRight(50)
-    chartConfig.getGeneralChartConfig.getMargin.setBottom(100)
-    chartConfig.getGeneralChartConfig.getMargin.setLeft(80)
-
-    showYearlyChkBox.getValue.asInstanceOf[Boolean] match {
-      case false => chartConfig.getTitle.setText("Expenses in " + monthCombo.getValue + ", " + yearCombo.getValue)
-      case true => chartConfig.getTitle.setText("Expenses in " + yearCombo.getValue)
-    }
-
-    val categories = list.map { _._1 }
-    val xAxis = new CategoryAxis()
-    xAxis.setCategories(categories)
-    xAxis.setLabel(new XAxisDataLabel())
-    xAxis.getLabel.setRotation(-45)
-    xAxis.getLabel.setAlign(HorzAlign.RIGHT)
-    xAxis.getLabel.setStyle("{ font: 'normal 13px Verdana, sans-serif' }")
-    val xAxesSet = new LinkedHashSet[InvientChartsConfig.XAxis]()
-    xAxesSet.add(xAxis)
-    chartConfig.setXAxes(xAxesSet)
-
-    val yAxis = new NumberYAxis()
-    yAxis.setMin(0.0)
-    yAxis.setTitle(new AxisTitle("Expense (SEK)"))
-    val yAxesSet = new LinkedHashSet[InvientChartsConfig.YAxis]()
-    yAxesSet.add(yAxis);
-    chartConfig.setYAxes(yAxesSet);
-
-    chartConfig.setLegend(new Legend(false));
-
-    chartConfig.getTooltip.setFormatterJsFunc("function() { return this.y +' SEK'; }")
-
-    val chart = new InvientCharts(chartConfig)
-
-    val colCfg = new ColumnConfig()
-    colCfg.setDataLabel(new DataLabel())
-    colCfg.getDataLabel.setRotation(-90)
-    colCfg.getDataLabel.setAlign(HorzAlign.RIGHT)
-    colCfg.getDataLabel.setX(-3)
-    colCfg.getDataLabel.setY(10)
-    colCfg.getDataLabel.setColor(new RGB(255, 255, 255))
-    colCfg.getDataLabel.setFormatterJsFunc("function() {" + " return this.y; " + "}")
-    colCfg.getDataLabel.setStyle(" { font: 'normal 9px Verdana, sans-serif' } ")
-    val seriesData = new XYSeries("", colCfg)
-    val expenses = new LinkedHashSet[InvientCharts.DecimalPoint]()
-    list.foreach { t => expenses.add(new DecimalPoint(seriesData, t._2))}
-    seriesData.setSeriesPoints(expenses);
-
-    chart.addSeries(seriesData);
-    chart    
-  }
-
-  def groupedCategoryBarChart(list:List[(String, Double)]):InvientCharts = {
-    val chartConfig = new InvientChartsConfig()
-    chartConfig.getGeneralChartConfig.setType(SeriesType.COLUMN)
-    chartConfig.getGeneralChartConfig.setMargin(new Margin())
-    chartConfig.getGeneralChartConfig.getMargin.setTop(50)
-    chartConfig.getGeneralChartConfig.getMargin.setRight(50)
-    chartConfig.getGeneralChartConfig.getMargin.setBottom(100)
-    chartConfig.getGeneralChartConfig.getMargin.setLeft(80)
-    chartConfig.getTitle.setText("Expenses for category '" + allCategoriesCombo.getValue.asInstanceOf[String] + "'")
-
-    val categories = formatDates(list.map(_._1))
-    val xAxis = new CategoryAxis()
-    xAxis.setCategories(categories)
-    xAxis.setLabel(new XAxisDataLabel())
-    xAxis.getLabel.setRotation(-45)
-    xAxis.getLabel.setAlign(HorzAlign.RIGHT)
-    xAxis.getLabel.setStyle("{ font: 'normal 13px Verdana, sans-serif' }")
-    val xAxesSet = new LinkedHashSet[InvientChartsConfig.XAxis]()
-    xAxesSet.add(xAxis)
-    chartConfig.setXAxes(xAxesSet)
-
-    val yAxis = new NumberYAxis()
-    yAxis.setMin(0.0)
-    yAxis.setTitle(new AxisTitle("Expense (SEK)"))
-    val yAxesSet = new LinkedHashSet[InvientChartsConfig.YAxis]()
-    yAxesSet.add(yAxis);
-    chartConfig.setYAxes(yAxesSet);
-
-    chartConfig.setLegend(new Legend(false));
-
-    chartConfig.getTooltip.setFormatterJsFunc("function() { return this.y +' SEK'; }")
-
-    val chart = new InvientCharts(chartConfig)
-    chart.setWidth("100%")
-
-    val colCfg = new ColumnConfig()
-    colCfg.setDataLabel(new DataLabel())
-    colCfg.getDataLabel.setRotation(-90)
-    colCfg.getDataLabel.setAlign(HorzAlign.RIGHT)
-    colCfg.getDataLabel.setX(-3)
-    colCfg.getDataLabel.setY(10)
-    colCfg.getDataLabel.setColor(new RGB(255, 255, 255))
-    colCfg.getDataLabel.setFormatterJsFunc("function() {" + " return this.y; " + "}")
-    colCfg.getDataLabel.setStyle(" { font: 'normal 9px Verdana, sans-serif' } ")
-    val seriesData = new XYSeries("", colCfg)
-    val expenses = new LinkedHashSet[InvientCharts.DecimalPoint]()
-    list.foreach { t => expenses.add(new DecimalPoint(seriesData, t._2))}
-    seriesData.setSeriesPoints(expenses);
-
-    chart.addSeries(seriesData);
-    chart
-  }
-
-  def formatDates(list:List[String]):List[String] = {
-    def format(key:String):String = {
-      val tokens = key.split("-")
-      val month = tokens(1) match {
-        case "00" => "Jan"
-        case "01" => "Feb"
-        case "02" => "Mar"
-        case "03" => "Apr"
-        case "04" => "May"
-        case "05" => "Jun"
-        case "06" => "Jul"
-        case "07" => "Aug"
-        case "08" => "Sep"
-        case "09" => "Oct"
-        case "10" => "Nov"
-        case "11" => "Dec"
-        case _    => "WTF!"
-      }
-      tokens(0) + " " + month
-    }
-    list.map(format(_))
-  }
-
   override def decideTheView() {
     expenseTableLayout removeAllComponents()
     expenseTableLayout <~ new AddExpenseExpenseTable(selectedPieChartCategory, this, showItemsInCategoryBtn)
