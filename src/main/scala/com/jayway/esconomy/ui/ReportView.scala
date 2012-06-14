@@ -38,7 +38,7 @@ import wrapped._
 
 case class ReportView(dashboard:Main) extends View with Property.ValueChangeListener {
 
-  lazy val queries = new QueryChannelImpl
+  val queries = new QueryChannelImpl
   val self = this
 
   lazy val cats:List[String] = queries.allCategories match {
@@ -63,15 +63,12 @@ case class ReportView(dashboard:Main) extends View with Property.ValueChangeList
   val showItemsInCategoryBtn = new ButtonW()
   var selectedPieChartCategory:String = _
   val currentCategories:mutable.ListBuffer[String] = mutable.ListBuffer[String]()
-
-  /* Category focused report */
-  val categoryFocusedMainLayout = new VerticalLayoutW()
   val allCategoriesCombo = new ComboBoxW(caption = "Categories")
-  allCategoriesCombo <~ cats
-  val comboCategoryPanel = new PanelW(caption = "Categories", width = "100%")
-  val categoryFocusedChartLayout = new VerticalLayoutW(height = "100%", width = "100%")
 
-  lazy val chartConstructors = new ChartConstructors(allCategoriesCombo, monthCombo, yearCombo, showYearlyChkBox)
+  val chartConstructors = new ChartConstructors(allCategoriesCombo,
+    monthCombo, yearCombo, showYearlyChkBox, showItemsInCategoryBtn, selectedPieChartCategory)
+
+  val categoryFocusedTabView = new CategoryFocusedTabView(chartConstructors)
 
   showItemsInCategoryBtn.addListener(new ClickListener {
     def buttonClick(event: Button#ClickEvent) {
@@ -84,27 +81,11 @@ case class ReportView(dashboard:Main) extends View with Property.ValueChangeList
   def components = {
     constructAllCategoryLayout()
     constructAllPeriodLayout()
-    constructCategoryFocusedLayout()
     allCategoriesMainLayout.setSizeFull()
     allCategoriesMainLayout <~ checkBoxCategoryPanel <~ allCategoriesChartLayout <~ expenseTableLayout
     mainTab.addTab(allCategoriesMainLayout, "All Categories Monthly & Yearly Report")
-    mainTab.addTab(categoryFocusedMainLayout, "Category focused Report")
+    mainTab.addTab(categoryFocusedTabView.getComponents, "Category focused Report")
     mainTab
-  }
-
-  def constructCategoryFocusedLayout() {
-    allCategoriesCombo.addListener(new ValueChangeListener {
-      def valueChange(event: ValueChangeEvent) {
-        queries.groupedPriceForItemsInCategory(allCategoriesCombo.getValue.asInstanceOf[String]) match {
-          case Success(result)  =>
-            categoryFocusedChartLayout.removeAllComponents()
-            categoryFocusedChartLayout <~ chartConstructors.groupedCategoryBarChart(result.toList)
-          case Failure(message) => println(message)
-        }
-      }
-    })
-    comboCategoryPanel <~ allCategoriesCombo
-    categoryFocusedMainLayout <~ comboCategoryPanel <~ categoryFocusedChartLayout
   }
 
   def constructAllCategoryLayout() {
@@ -187,59 +168,12 @@ case class ReportView(dashboard:Main) extends View with Property.ValueChangeList
   def updateChart(list:List[(String, Double)]) {
     val totalExpense = list.foldLeft(0.0)( (r,c) => r + c._2)
     val bChart = chartConstructors.allCategoriesBarChart(list)
-    val chart = pieChart (list.map { x => (x._1, if (x._2 != 0.0) df.format(100 * x._2/totalExpense).toDouble else x._2)})
+    val chart = chartConstructors.pieChart (list.map { x => (x._1, if (x._2 != 0.0) df.format(100 * x._2/totalExpense).toDouble else x._2)})
     allCategoriesChartLayout.removeAllComponents()
     allCategoriesChartLayout <~ chart <~ bChart
   }
 
-  def pieChart(list:List[(String, Double)]):VerticalLayoutW = {
-    val verticalLayout = new VerticalLayoutW()
-    showItemsInCategoryBtn.setVisible(false)
 
-    val chartConfig = new InvientChartsConfig()
-    chartConfig.getGeneralChartConfig.setType(SeriesType.PIE)
-
-    showYearlyChkBox.getValue.asInstanceOf[Boolean] match {
-      case false => chartConfig.getTitle.setText("Expenses in " + monthCombo.getValue + ", " + yearCombo.getValue)
-      case true => chartConfig.getTitle.setText("Expenses in " + yearCombo.getValue)
-    }
-
-    chartConfig.getTooltip.setFormatterJsFunc("function() {"
-        + " return '<b>'+ this.point.name +'</b>: '+ this.y +' %'; "
-        + "}")
-
-    val pie = new PieConfig()
-    pie.setAllowPointSelect(true)
-    pie.setCursor("pointer")
-    pie.setDataLabel(new PieDataLabel(false))
-    pie.getDataLabel.setEnabled(true)
-    pie.setShowInLegend(true)
-    chartConfig.addSeriesConfig(pie)
-
-    val chart = new InvientCharts(chartConfig)
-
-    val series = new XYSeries("Category")
-    val points = new LinkedHashSet[DecimalPoint]()
-    list.foreach { i => points.add(new DecimalPoint(series, i._1, i._2))}
-
-    series.setSeriesPoints(points)
-    chart.addSeries(series)
-    chart.setStyleName("v-chart-min-width")
-    chart.setHeight("410px")
-    chart.setWidth("400px")
-    chart.setImmediate(true)
-
-    chart.addListener(new PointSelectListener {
-      def pointSelected(p1: InvientCharts#PointSelectEvent) {
-        selectedPieChartCategory = p1.getPoint.getName
-        showItemsInCategoryBtn.setCaption("Show '" + p1.getPoint.getName + "' Items")
-        showItemsInCategoryBtn.setVisible(true)
-      }
-    })
-    verticalLayout <~ chart <~ showItemsInCategoryBtn
-    verticalLayout
-  }
-  
   override def decideTheView() {
     expenseTableLayout removeAllComponents()
     expenseTableLayout <~ new AddExpenseExpenseTable(selectedPieChartCategory, this, showItemsInCategoryBtn)

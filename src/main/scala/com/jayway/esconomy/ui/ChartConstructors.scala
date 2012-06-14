@@ -7,9 +7,9 @@ import java.util.LinkedHashSet
 import com.invient.vaadin.charts.InvientChartsConfig.AxisBase.AxisTitle
 import com.invient.vaadin.charts.InvientChartsConfig._
 import com.invient.vaadin.charts.Color.RGB
-import com.invient.vaadin.charts.InvientCharts.{DecimalPoint, XYSeries, SeriesType}
-import wrapped.ComboBoxW
 import com.vaadin.ui.CheckBox
+import com.invient.vaadin.charts.InvientCharts.{PointSelectListener, DecimalPoint, XYSeries, SeriesType}
+import wrapped.{ButtonW, VerticalLayoutW, ComboBoxW}
 
 /**
  * Copyright 2012 Amir Moulavi (amir.moulavi@gmail.com)
@@ -29,7 +29,12 @@ import com.vaadin.ui.CheckBox
  * @author Amir Moulavi
  */
 
-class ChartConstructors(allCategoriesCombo:ComboBoxW, monthCombo:ComboBoxW, yearCombo:ComboBoxW, showYearlyChkBox:CheckBox) {
+class ChartConstructors(allCategoriesCombo:ComboBoxW,
+                        monthCombo:ComboBoxW,
+                        yearCombo:ComboBoxW,
+                        showYearlyChkBox:CheckBox,
+                        showItemsInCategoryBtn:ButtonW,
+                        var selectedPieChartCategory:String) {
 
   def groupedCategoryBarChart(list:List[(String, Double)]):InvientCharts = {
     val chartConfig = new InvientChartsConfig()
@@ -139,6 +144,55 @@ class ChartConstructors(allCategoriesCombo:ComboBoxW, monthCombo:ComboBoxW, year
     chart.addSeries(seriesData)
     chart
   }
+
+  def pieChart(list:List[(String, Double)]):VerticalLayoutW = {
+    val verticalLayout = new VerticalLayoutW()
+    showItemsInCategoryBtn.setVisible(false)
+
+    val chartConfig = new InvientChartsConfig()
+    chartConfig.getGeneralChartConfig.setType(SeriesType.PIE)
+
+    showYearlyChkBox.getValue.asInstanceOf[Boolean] match {
+      case false => chartConfig.getTitle.setText("Expenses in " + monthCombo.getValue + ", " + yearCombo.getValue)
+      case true => chartConfig.getTitle.setText("Expenses in " + yearCombo.getValue)
+    }
+
+    chartConfig.getTooltip.setFormatterJsFunc("function() {"
+        + " return '<b>'+ this.point.name +'</b>: '+ this.y +' %'; "
+        + "}")
+
+    val pie = new PieConfig()
+    pie.setAllowPointSelect(true)
+    pie.setCursor("pointer")
+    pie.setDataLabel(new PieDataLabel(false))
+    pie.getDataLabel.setEnabled(true)
+    pie.setShowInLegend(true)
+    chartConfig.addSeriesConfig(pie)
+
+    val chart = new InvientCharts(chartConfig)
+
+    val series = new XYSeries("Category")
+    val points = new LinkedHashSet[DecimalPoint]()
+    list.foreach { i => points.add(new DecimalPoint(series, i._1, i._2))}
+
+    series.setSeriesPoints(points)
+    chart.addSeries(series)
+    chart.setStyleName("v-chart-min-width")
+    chart.setHeight("410px")
+    chart.setWidth("400px")
+    chart.setImmediate(true)
+
+    chart.addListener(new PointSelectListener {
+      def pointSelected(p1: InvientCharts#PointSelectEvent) {
+        selectedPieChartCategory = p1.getPoint.getName
+        showItemsInCategoryBtn.setCaption("Show '" + p1.getPoint.getName + "' Items")
+        showItemsInCategoryBtn.setVisible(true)
+      }
+    })
+    verticalLayout <~ chart <~ showItemsInCategoryBtn
+    verticalLayout
+  }
+
 
   def formatDates(list:List[String]):List[String] = {
     def format(key:String):String = {
